@@ -1,65 +1,370 @@
-import Image from "next/image";
+"use client";
+import { useState, useEffect } from "react";
+
+const CANDIDATES_GROUPS = [
+  {
+    category: "State Superintendent",
+    items: ["Steve Harshman"],
+  }, 
+  {
+  category: "Governor",
+      items: ["Eric Barlow"],
+    },
+    {
+      category: "US Senate",
+      items: ["Sam Mead"],
+    },
+    {
+      category: "House District 37",
+      items: ["Brian Costello"],
+    },
+    {
+      category: "Statewide Amendments",
+      items: ["No on tax reduction", "Yes on tax reduction"],
+
+    },
+];
+
 
 export default function Home() {
+  const [view, setView] = useState("request");
+  const [pickupMode, setPickupMode] = useState("used_website");
+
+  const [name, setName] = useState("");
+  const [address, setAddress] = useState("");
+  const [email, setEmail] = useState("");
+  const [candidateDropdownOpen, setCandidateDropdownOpen] = useState(false);
+  const [selectedCandidates, setSelectedCandidates] = useState<{ [key: string]: string }>({});
+  const [pickupCandidates, setPickupCandidates] = useState<string[]>([]);
+
+  const [statusMessage, setStatusMessage] = useState("");
+
+  useEffect(() => {
+    if (!statusMessage) return;
+
+    const timer = setTimeout(() => setStatusMessage(""), 3000);
+
+    return () => clearTimeout(timer);
+  }, [statusMessage]);
+
+  function toggleCandidate(name: string) {
+    setSelectedCandidates((prev) => {
+      const updated = { ...prev };
+      if (name in updated) {
+        delete updated[name];
+      } else {
+        updated[name] = "";
+      }
+      return updated;
+    });
+  }
+
+  function updateQuantity(name: string, value: string) {
+    setSelectedCandidates((prev) => ({ ...prev, [name]: value }));
+  }
+
+  function togglePickupCandidates(name: string) {
+    setPickupCandidates((prev) => {
+      if (prev.includes(name)) {
+        return prev.filter((c) => c !== name);
+      } else {
+        return [...prev, name];
+      }
+    });
+  }
+
+  async function handleSubmit() {
+    const requestData = {
+      name: name,
+      address: address,
+      email: email,
+      candidates: selectedCandidates,
+    };
+
+    const response = await fetch("/api/requests", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(requestData),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      setStatusMessage("Request submitted");
+      setName("");
+      setAddress("");
+      setEmail("");
+      setSelectedCandidates({});
+    } else {
+      setStatusMessage("Something went wrong: " + result.error);
+    }
+  }
+
+  async function handlePickupByEmail() {
+    const response = await fetch("/api/pickup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mode: "used_website", email: email }),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      setStatusMessage("Pickup requested");
+      setEmail("");
+    } else {
+      setStatusMessage("Something went wrong: " + result.error);
+    }
+  }
+
+  async function handlePickupByAddress() {
+    const response = await fetch("/api/pickup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        mode: "not_used",
+        name: name,
+        address: address,
+        email: email,
+        candidates: pickupCandidates
+      }),
+    });
+
+    const result = await response.json();
+
+    if (result.success) {
+      setStatusMessage("Pickup requested!");
+      setName("");
+      setAddress("");
+      setEmail("");
+      setPickupCandidates([]);
+    } else {
+      setStatusMessage("Something went wrong: " + result.error);
+    }
+  }
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
+    <main className="flex min-h-screen flex-col items-center justify-center p-24">
+      <h1 className="text-2xl text-[#ffc72c] [text-shadow:4px_4px_0_#000]">
+        Natrona County Political Sign Wranglers
+      </h1>
+
+      <button
+        onClick={() => setView("request")}
+        className="pixel-btn mt-8 bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
+      >
+        Request a Sign
+      </button>
+
+      <button
+        onClick={() => setView("pickup")}
+        className="pixel-btn mt-8 bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
+      >
+        Pick Up a Sign
+      </button>
+
+      {/* Page for requesting a sign */}
+      {view === "request" && (
+        <div>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Enter your name"
+            className="mt-8 block border-2 border-black bg-[#241a10] px-4 py-2 text-[#f5e6c8]"
+          />
+
+          <input
+            type="text"
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            placeholder="Enter your address"
+            className="mt-8 block border-2 border-black bg-[#241a10] px-4 py-2 text-[#f5e6c8]"
+          />
+
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Enter your email"
+            className="mt-8 block border-2 border-black bg-[#241a10] px-4 py-2 text-[#f5e6c8]"
+          />
+
+          <div className="relative mt-8">
+            <button
+              type="button"
+              onClick={() => setCandidateDropdownOpen(!candidateDropdownOpen)}
+              className="pixel-btn flex w-80 items-center justify-between bg-[#3d2817] px-4 py-3 text-left text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
             >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+              <span>
+                {Object.keys(selectedCandidates).length > 0
+                  ? `${Object.keys(selectedCandidates).length} candidate(s) selected`
+                  : "Select candidates"}
+              </span>
+              <span>{candidateDropdownOpen ? "▲" : "▼"}</span>
+            </button>
+
+            {candidateDropdownOpen && (
+              <div className="pixel-panel absolute z-10 mt-2 max-h-80 w-80 overflow-y-auto bg-[#241a10] p-4">
+                {CANDIDATES_GROUPS.map((group, index) => (
+                  <div
+                    key={group.category}
+                    className={index > 0 ? "mt-4 border-t border-[#5a3d24] pt-4" : ""}
+                  >
+                    <p className="mb-2 text-xs uppercase tracking-wide text-[#c9a227]">
+                      {group.category}
+                    </p>
+                    {group.items.map((candidate) => (
+                      <div
+                        key={candidate}
+                        className="flex items-center gap-2 px-2 py-1.5 hover:bg-[#3d2817]"
+                      >
+                        <input
+                          type="checkbox"
+                          checked={candidate in selectedCandidates}
+                          onChange={() => toggleCandidate(candidate)}
+                          className="h-4 w-4 accent-[#ffc72c]"
+                        />
+
+                        <label className="flex-1 text-sm">{candidate}</label>
+
+                        {candidate in selectedCandidates && (
+                          <input
+                            type="number"
+                            min="1"
+                            value={selectedCandidates[candidate]}
+                            onChange={(e) => updateQuantity(candidate, e.target.value)}
+                            placeholder="Qty"
+                            className="w-16 border-2 border-black bg-[#1a120b] px-2 py-1 text-sm text-[#f5e6c8]"
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <button onClick={handleSubmit} className="pixel-btn mt-8 bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]">
+            Submit
+          </button>
+
+          {statusMessage && <p className="mt-4">{statusMessage}</p>}
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      )}
+
+      {/* Page for picking up signs */}
+      {view === "pickup" && (
+        <div>
+          <button
+            onClick={() => setPickupMode("used_website")}
+            className="pixel-btn mt-8 bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            I've used the website for sign dropoff
+          </button>
+
+          <button
+            onClick={() => setPickupMode("not_used")}
+            className="pixel-btn mt-8 bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
           >
-            Documentation
-          </a>
+            I didn't use the website for sign dropoff
+          </button>
+
+          {pickupMode === "used_website" && (
+            <div>
+              <p className="mt-4">Please enter the email you used in your dropoff request, so we can search our database</p>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="mt-8 block border-2 border-black bg-[#241a10] px-4 py-2 text-[#f5e6c8]"
+              />
+
+              <button onClick={handlePickupByEmail} className="pixel-btn mt-8 bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]">
+                Submit
+              </button>
+            </div>
+          )}
+
+          {pickupMode === "not_used" && (
+            <div>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter name here"
+                className="mt-8 block border-2 border-black bg-[#241a10] px-4 py-2 text-[#f5e6c8]"
+              />
+              <input
+                type="text"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                placeholder="Enter the address"
+                className="mt-8 block border-2 border-black bg-[#241a10] px-4 py-2 text-[#f5e6c8]"
+              />
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email (optional, for a confirmation)"
+                className="mt-8 block border-2 border-black bg-[#241a10] px-4 py-2 text-[#f5e6c8]"
+              />
+
+              <div className="relative mt-8">
+                <button
+                  type="button"
+                  onClick={() => setCandidateDropdownOpen(!candidateDropdownOpen)}
+                  className="pixel-btn flex w-80 items-center justify-between bg-[#3d2817] px-4 py-3 text-left text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
+                >
+                  <span>
+                    {pickupCandidates.length > 0
+                      ? `${pickupCandidates.length} candidate(s) selected`
+                      : "Select candidates"}
+                  </span>
+                  <span>{candidateDropdownOpen ? "▲" : "▼"}</span>
+                </button>
+
+                {candidateDropdownOpen && (
+                  <div className="pixel-panel absolute z-10 mt-2 max-h-80 w-80 overflow-y-auto bg-[#241a10] p-4">
+                    {CANDIDATES_GROUPS.map((group, index) => (
+                      <div
+                        key={group.category}
+                        className={index > 0 ? "mt-4 border-t border-[#5a3d24] pt-4" : ""}
+                      >
+                        <p className="mb-2 text-xs uppercase tracking-wide text-[#c9a227]">
+                          {group.category}
+                        </p>
+                        {group.items.map((candidate) => (
+                          <div
+                            key={candidate}
+                            className="flex items-center gap-2 px-2 py-1.5 hover:bg-[#3d2817]"
+                          >
+                            <input
+                              type="checkbox"
+                              checked={pickupCandidates.includes(candidate)}
+                              onChange={() => togglePickupCandidates(candidate)}
+                              className="h-4 w-4 accent-[#ffc72c]"
+                            />
+                            <label className="flex-1 text-sm">{candidate}</label>
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <button onClick={handlePickupByAddress} className="pixel-btn mt-8 bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]">
+                Submit
+              </button>
+            </div>
+          )}
+
+          {statusMessage && <p className="mt-4">{statusMessage}</p>}
         </div>
-      </main>
-    </div>
+      )}
+    </main>
   );
 }
