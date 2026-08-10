@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/app/lib/supabaseClient";
-import { resend } from "@/app/lib/resend";
+// import { resend } from "@/app/lib/resend"; // disabled until a domain is verified with Resend
 
 export async function  GET(){
     const { data, error } = await supabase.from("signs").select().order("id", { ascending: true });
@@ -25,6 +25,7 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  /* Status-update email disabled until a domain is verified with Resend.
   const sign = data[0];
 
   if (sign?.email) {
@@ -53,6 +54,7 @@ export async function PATCH(request: Request) {
       }
     }
   }
+  */
 
   return NextResponse.json({ success: true, data });
 }

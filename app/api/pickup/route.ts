@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/app/lib/supabaseClient";
-import { resend } from "@/app/lib/resend";
+// import { resend } from "@/app/lib/resend"; // disabled until a domain is verified with Resend
 
 export async function POST(request: Request) {
     const body = await request.json();
@@ -28,6 +28,7 @@ export async function POST(request: Request) {
             );
         }
 
+        /* Email confirmation disabled until a domain is verified with Resend.
         const { error: emailError } = await resend.emails.send({
             from: "onboarding@resend.dev",
             to: email,
@@ -38,6 +39,7 @@ export async function POST(request: Request) {
         if (emailError) {
             console.error("Failed to send pickup confirmation email:", emailError);
         }
+        */
 
         return NextResponse.json({ success: true, data});
     }
@@ -62,6 +64,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: error.message}, { status: 500});
         }
 
+        /* Email confirmation disabled until a domain is verified with Resend.
         if (email) {
             const { error: emailError } = await resend.emails.send({
                 from: "onboarding@resend.dev",
@@ -74,6 +77,7 @@ export async function POST(request: Request) {
                 console.error("Failed to send pickup confirmation email:", emailError);
             }
         }
+        */
 
        return NextResponse.json({ success: true, data });
   }

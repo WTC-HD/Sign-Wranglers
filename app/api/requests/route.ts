@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { supabase } from "@/app/lib/supabaseClient";
-import { resend } from "@/app/lib/resend";
+// import { resend } from "@/app/lib/resend"; // disabled until a domain is verified with Resend
 
 export async function POST(request: Request) {
   const body = await request.json();
@@ -40,6 +40,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
+  /* Email confirmation disabled until a domain is verified with Resend
+     (onboarding@resend.dev can only send to the account owner, not real users).
+
   const candidateList = Object.entries(candidates)
     .map(([candidateName, quantity]) => `${quantity} x ${candidateName}`)
     .join(", ");
@@ -54,6 +57,7 @@ export async function POST(request: Request) {
   if (emailError) {
     console.error("Failed to send confirmation email:", emailError);
   }
+  */
 
   return NextResponse.json({ success: true, data });
 }
