@@ -78,6 +78,7 @@ export default function Home() {
   const [openTiers, setOpenTiers] = useState<string[]>([]);
   const [selectedCandidates, setSelectedCandidates] = useState<{ [key: string]: string }>({});
   const [pickupCandidates, setPickupCandidates] = useState<string[]>([]);
+  const [pickupAllSigns, setPickupAllSigns] = useState(false);
 
   const [statusMessage, setStatusMessage] = useState("");
 
@@ -184,7 +185,7 @@ export default function Home() {
         name: name,
         address: address,
         email: email,
-        candidates: pickupCandidates
+        candidates: pickupAllSigns ? ["All signs in yard"] : pickupCandidates
       }),
     });
 
@@ -196,6 +197,7 @@ export default function Home() {
       setAddress("");
       setEmail("");
       setPickupCandidates([]);
+      setPickupAllSigns(false);
     } else {
       setStatusMessage("Something went wrong: " + result.error);
     }
@@ -431,6 +433,17 @@ export default function Home() {
                 className="mt-8 block border-2 border-black bg-[#241a10] px-4 py-2 text-[#f5e6c8]"
               />
 
+              <label className="mt-8 flex items-center gap-2 text-sm">
+                <input
+                  type="checkbox"
+                  checked={pickupAllSigns}
+                  onChange={() => setPickupAllSigns(!pickupAllSigns)}
+                  className="h-4 w-4 accent-[#ffc72c]"
+                />
+                Pick up all signs in my yard
+              </label>
+
+              {!pickupAllSigns && (
               <div className="relative mt-8">
                 <button
                   type="button"
@@ -503,6 +516,7 @@ export default function Home() {
                   </>
                 )}
               </div>
+              )}
 
               <button onClick={handlePickupByAddress} className="pixel-btn mt-8 bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]">
                 Submit

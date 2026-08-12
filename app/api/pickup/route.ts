@@ -4,7 +4,7 @@ import { supabase } from "@/app/lib/supabaseClient";
 
 export async function POST(request: Request) {
     const body = await request.json();
-    const { mode, email, address, name } = body;
+    const { mode, email, address, name, candidates } = body;
 
     if(mode === "used_website"){
         if(!email){
@@ -55,6 +55,7 @@ export async function POST(request: Request) {
                 name,
                 address,
                 email,
+                candidates,
                 status: "pickup_requested",
                 pickup_requested: true,
             })

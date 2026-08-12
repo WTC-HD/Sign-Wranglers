@@ -9,7 +9,16 @@ type Sign = {
   email: string;
   status: string;
   pickup_requested: boolean;
+  candidates: Record<string, string> | string[] | null;
 };
+
+function formatCandidates(candidates: Sign["candidates"]) {
+  if (!candidates) return null;
+  if (Array.isArray(candidates)) return candidates.join(", ");
+  return Object.entries(candidates)
+    .map(([name, quantity]) => `${quantity} x ${name}`)
+    .join(", ");
+}
 
 export default function AdminPage(){
     const [signs, setSigns] = useState<Sign[]>([]);
@@ -47,6 +56,9 @@ export default function AdminPage(){
                     <p>Address: {sign.address}</p>
                     <p>Email: {sign.email}</p>
                     <p>Status: {sign.status}</p>
+                    {formatCandidates(sign.candidates) && (
+                        <p>Candidates: {formatCandidates(sign.candidates)}</p>
+                    )}
                     <p>{renderButton(sign)}</p>
                 </div>
             ))}
