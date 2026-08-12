@@ -214,14 +214,14 @@ export default function Home() {
           onClick={() => setView("request")}
           className="pixel-btn bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
         >
-          Request a Sign
+          Sign(s) Dropoff
         </button>
 
         <button
           onClick={() => setView("pickup")}
           className="pixel-btn bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
         >
-          Pick Up a Sign
+          Sign(s) Removal
         </button>
       </div>
 
