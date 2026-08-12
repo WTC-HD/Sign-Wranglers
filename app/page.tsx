@@ -1,43 +1,95 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
-const CANDIDATES_GROUPS = [
+const CANDIDATE_TIERS = [
   {
-    category: "State Superintendent",
-    items: ["Steve Harshman"],
-  }, 
+    tier: "National",
+    groups: [
+      { category: "US House", items: ["Kevin Christensen"] },
+      { category: "US Senate", items: ["Sam Mead"] },
+    ],
+  },
   {
-  category: "Governor",
-      items: ["Eric Barlow"],
-    },
-    {
-      category: "US Senate",
-      items: ["Sam Mead"],
-    },
-    {
-      category: "House District 37",
-      items: ["Brian Costello"],
-    },
-    {
-      category: "Statewide Amendments",
-      items: ["No on tax reduction", "Yes on tax reduction"],
-
-    },
+    tier: "Statewide",
+    groups: [
+      { category: "Wyoming Governor", items: ["Eric Barlow"] },
+      { category: "Wyoming Secretary of State", items: ["Robert Short"] },
+      { category: "Wyoming Superintendent of Public Instruction", items: ["Steve Harshman"] },
+      { category: "Wyoming State Auditor", items: ["Kristi Racine"] },
+      { category: "Wyoming State Treasurer", items: ["Curt Meier"] },
+      { category: "Statewide Amendments", items: ["No on tax reduction", "Yes on tax reduction"] },
+    ],
+  },
+  {
+    tier: "Local",
+    groups: [
+      {
+        category: "Natrona County State House",
+        items: [
+          "District 35 - Chris Dresang",
+          "District 36 - Art Washut",
+          "District 37 - Brian Costello",
+          "District 38 - Robert Hendry",
+          "District 56 - Elissa Campbell",
+          "District 57 - Julie Jarvis",
+          "District 58 - Peter Boyer",
+          "District 59 - J.R. Riggins",
+          "District 62 - Edis Allen",
+        ],
+      },
+      {
+        category: "Natrona County State Senate",
+        items: [
+          "District 27 - Kevin Helling",
+          "District 29 - Lisa Engebretsen",
+        ],
+      },
+      {
+        category: "Natrona County City Council",
+        items: [
+          "Ward I - Brett Hobza",
+          "Ward II - Michael Bond",
+          "Ward II - Shane True",
+          "Ward III - Kaycee Wiita",
+          "Ward III - Brandy Haskins",
+        ],
+      },
+      {
+        category: "Natrona County Commissioners",
+        items: ["Chad McNutt", "Ray Pacheco", "Charles Moore"],
+      },
+      {
+        category: "Natrona County School Board",
+        items: ["Teal-Slate Sign(contains all canidates", "Kevin Christopherson", "Michael Stedillie", "Eric Nelson", "Taylor Rosty", ],
+      },
+    ],
+  },
 ];
 
 
 export default function Home() {
-  const [view, setView] = useState("request");
+  const [view, setView] = useState("");
   const [pickupMode, setPickupMode] = useState("used_website");
 
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
   const [email, setEmail] = useState("");
   const [candidateDropdownOpen, setCandidateDropdownOpen] = useState(false);
+  const [openTiers, setOpenTiers] = useState<string[]>([]);
   const [selectedCandidates, setSelectedCandidates] = useState<{ [key: string]: string }>({});
   const [pickupCandidates, setPickupCandidates] = useState<string[]>([]);
 
   const [statusMessage, setStatusMessage] = useState("");
+
+  const nameRef = useRef<HTMLInputElement>(null);
+  const addressRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+
+  function closeDropdownOnEnter(e: React.KeyboardEvent<HTMLDivElement>) {
+    if (e.key === "Enter") {
+      setCandidateDropdownOpen(false);
+    }
+  }
 
   useEffect(() => {
     if (!statusMessage) return;
@@ -61,6 +113,12 @@ export default function Home() {
 
   function updateQuantity(name: string, value: string) {
     setSelectedCandidates((prev) => ({ ...prev, [name]: value }));
+  }
+
+  function toggleTier(tier: string) {
+    setOpenTiers((prev) =>
+      prev.includes(tier) ? prev.filter((t) => t !== tier) : [...prev, tier]
+    );
   }
 
   function togglePickupCandidates(name: string) {
@@ -149,40 +207,57 @@ export default function Home() {
         Natrona County Political Sign Wranglers
       </h1>
 
-      <button
-        onClick={() => setView("request")}
-        className="pixel-btn mt-8 bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
-      >
-        Request a Sign
-      </button>
+      <div className="mt-8 flex gap-4">
+        <button
+          onClick={() => setView("request")}
+          className="pixel-btn bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
+        >
+          Request a Sign
+        </button>
 
-      <button
-        onClick={() => setView("pickup")}
-        className="pixel-btn mt-8 bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
-      >
-        Pick Up a Sign
-      </button>
+        <button
+          onClick={() => setView("pickup")}
+          className="pixel-btn bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
+        >
+          Pick Up a Sign
+        </button>
+      </div>
 
       {/* Page for requesting a sign */}
       {view === "request" && (
         <div>
           <input
+            ref={nameRef}
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addressRef.current?.focus();
+              }
+            }}
             placeholder="Enter your name"
             className="mt-8 block border-2 border-black bg-[#241a10] px-4 py-2 text-[#f5e6c8]"
           />
 
           <input
+            ref={addressRef}
             type="text"
             value={address}
             onChange={(e) => setAddress(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                emailRef.current?.focus();
+              }
+            }}
             placeholder="Enter your address"
             className="mt-8 block border-2 border-black bg-[#241a10] px-4 py-2 text-[#f5e6c8]"
           />
 
           <input
+            ref={emailRef}
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -205,44 +280,73 @@ export default function Home() {
             </button>
 
             {candidateDropdownOpen && (
-              <div className="pixel-panel absolute z-10 mt-2 max-h-80 w-80 overflow-y-auto bg-[#241a10] p-4">
-                {CANDIDATES_GROUPS.map((group, index) => (
+              <>
+                <div
+                  className="fixed inset-0 z-0"
+                  onClick={() => setCandidateDropdownOpen(false)}
+                />
+                <div
+                  className="pixel-panel absolute z-10 mt-2 max-h-80 w-80 overflow-y-auto bg-[#241a10] p-4"
+                  onKeyDown={closeDropdownOnEnter}
+                >
+                {CANDIDATE_TIERS.map((tierGroup, tierIndex) => (
                   <div
-                    key={group.category}
-                    className={index > 0 ? "mt-4 border-t border-[#5a3d24] pt-4" : ""}
+                    key={tierGroup.tier}
+                    className={tierIndex > 0 ? "mt-4 border-t border-[#5a3d24] pt-4" : ""}
                   >
-                    <p className="mb-2 text-xs uppercase tracking-wide text-[#c9a227]">
-                      {group.category}
-                    </p>
-                    {group.items.map((candidate) => (
-                      <div
-                        key={candidate}
-                        className="flex items-center gap-2 px-2 py-1.5 hover:bg-[#3d2817]"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={candidate in selectedCandidates}
-                          onChange={() => toggleCandidate(candidate)}
-                          className="h-4 w-4 accent-[#ffc72c]"
-                        />
+                    <button
+                      type="button"
+                      onClick={() => toggleTier(tierGroup.tier)}
+                      className="flex w-full items-center justify-between py-1 text-xs uppercase tracking-wide text-[#ffc72c]"
+                    >
+                      <span>{tierGroup.tier}</span>
+                      <span>{openTiers.includes(tierGroup.tier) ? "▲" : "▼"}</span>
+                    </button>
 
-                        <label className="flex-1 text-sm">{candidate}</label>
+                    {openTiers.includes(tierGroup.tier) && (
+                      <div className="mt-2">
+                        {tierGroup.groups.map((group, index) => (
+                          <div
+                            key={group.category}
+                            className={index > 0 ? "mt-3 border-t border-[#3d2817] pt-3" : ""}
+                          >
+                            <p className="mb-2 text-xs uppercase tracking-wide text-[#c9a227]">
+                              {group.category}
+                            </p>
+                            {group.items.map((candidate) => (
+                              <div
+                                key={candidate}
+                                className="flex items-center gap-2 px-2 py-1.5 hover:bg-[#3d2817]"
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={candidate in selectedCandidates}
+                                  onChange={() => toggleCandidate(candidate)}
+                                  className="h-4 w-4 accent-[#ffc72c]"
+                                />
 
-                        {candidate in selectedCandidates && (
-                          <input
-                            type="number"
-                            min="1"
-                            value={selectedCandidates[candidate]}
-                            onChange={(e) => updateQuantity(candidate, e.target.value)}
-                            placeholder="Qty"
-                            className="w-16 border-2 border-black bg-[#1a120b] px-2 py-1 text-sm text-[#f5e6c8]"
-                          />
-                        )}
+                                <label className="flex-1 text-sm">{candidate}</label>
+
+                                {candidate in selectedCandidates && (
+                                  <input
+                                    type="number"
+                                    min="1"
+                                    value={selectedCandidates[candidate]}
+                                    onChange={(e) => updateQuantity(candidate, e.target.value)}
+                                    placeholder="Qty"
+                                    className="w-16 border-2 border-black bg-[#1a120b] px-2 py-1 text-sm text-[#f5e6c8]"
+                                  />
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                        ))}
                       </div>
-                    ))}
+                    )}
                   </div>
                 ))}
               </div>
+              </>
             )}
           </div>
 
@@ -261,14 +365,14 @@ export default function Home() {
             onClick={() => setPickupMode("used_website")}
             className="pixel-btn mt-8 bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
           >
-            I've used the website for sign dropoff
+            I&apos;ve used the website for sign dropoff
           </button>
 
           <button
             onClick={() => setPickupMode("not_used")}
             className="pixel-btn mt-8 bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
           >
-            I didn't use the website for sign dropoff
+            I didn&apos;t use the website for sign dropoff
           </button>
 
           {pickupMode === "used_website" && (
@@ -291,20 +395,35 @@ export default function Home() {
           {pickupMode === "not_used" && (
             <div>
               <input
+                ref={nameRef}
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
+                onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addressRef.current?.focus();
+              }
+            }}
                 placeholder="Enter name here"
                 className="mt-8 block border-2 border-black bg-[#241a10] px-4 py-2 text-[#f5e6c8]"
               />
               <input
+                ref={addressRef}
                 type="text"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
+                onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                emailRef.current?.focus();
+              }
+            }}
                 placeholder="Enter the address"
                 className="mt-8 block border-2 border-black bg-[#241a10] px-4 py-2 text-[#f5e6c8]"
               />
               <input
+                ref={emailRef}
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
@@ -327,32 +446,61 @@ export default function Home() {
                 </button>
 
                 {candidateDropdownOpen && (
-                  <div className="pixel-panel absolute z-10 mt-2 max-h-80 w-80 overflow-y-auto bg-[#241a10] p-4">
-                    {CANDIDATES_GROUPS.map((group, index) => (
+                  <>
+                    <div
+                      className="fixed inset-0 z-0"
+                      onClick={() => setCandidateDropdownOpen(false)}
+                    />
+                    <div
+                      className="pixel-panel absolute z-10 mt-2 max-h-80 w-80 overflow-y-auto bg-[#241a10] p-4"
+                      onKeyDown={closeDropdownOnEnter}
+                    >
+                    {CANDIDATE_TIERS.map((tierGroup, tierIndex) => (
                       <div
-                        key={group.category}
-                        className={index > 0 ? "mt-4 border-t border-[#5a3d24] pt-4" : ""}
+                        key={tierGroup.tier}
+                        className={tierIndex > 0 ? "mt-4 border-t border-[#5a3d24] pt-4" : ""}
                       >
-                        <p className="mb-2 text-xs uppercase tracking-wide text-[#c9a227]">
-                          {group.category}
-                        </p>
-                        {group.items.map((candidate) => (
-                          <div
-                            key={candidate}
-                            className="flex items-center gap-2 px-2 py-1.5 hover:bg-[#3d2817]"
-                          >
-                            <input
-                              type="checkbox"
-                              checked={pickupCandidates.includes(candidate)}
-                              onChange={() => togglePickupCandidates(candidate)}
-                              className="h-4 w-4 accent-[#ffc72c]"
-                            />
-                            <label className="flex-1 text-sm">{candidate}</label>
+                        <button
+                          type="button"
+                          onClick={() => toggleTier(tierGroup.tier)}
+                          className="flex w-full items-center justify-between py-1 text-xs uppercase tracking-wide text-[#ffc72c]"
+                        >
+                          <span>{tierGroup.tier}</span>
+                          <span>{openTiers.includes(tierGroup.tier) ? "▲" : "▼"}</span>
+                        </button>
+
+                        {openTiers.includes(tierGroup.tier) && (
+                          <div className="mt-2">
+                            {tierGroup.groups.map((group, index) => (
+                              <div
+                                key={group.category}
+                                className={index > 0 ? "mt-3 border-t border-[#3d2817] pt-3" : ""}
+                              >
+                                <p className="mb-2 text-xs uppercase tracking-wide text-[#c9a227]">
+                                  {group.category}
+                                </p>
+                                {group.items.map((candidate) => (
+                                  <div
+                                    key={candidate}
+                                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-[#3d2817]"
+                                  >
+                                    <input
+                                      type="checkbox"
+                                      checked={pickupCandidates.includes(candidate)}
+                                      onChange={() => togglePickupCandidates(candidate)}
+                                      className="h-4 w-4 accent-[#ffc72c]"
+                                    />
+                                    <label className="flex-1 text-sm">{candidate}</label>
+                                  </div>
+                                ))}
+                              </div>
+                            ))}
                           </div>
-                        ))}
+                        )}
                       </div>
                     ))}
                   </div>
+                  </>
                 )}
               </div>
 

@@ -34,7 +34,10 @@ export default function AdminPage(){
     await loadSigns();
     }
 
-    useEffect(() => {loadSigns();}, []);
+    useEffect(() => {
+        // eslint-disable-next-line react-hooks/set-state-in-effect -- fetching data on mount is a documented valid use of useEffect
+        loadSigns();
+    }, []);
 
     return(
             <main>
