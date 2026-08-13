@@ -81,7 +81,7 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [candidateDropdownOpen, setCandidateDropdownOpen] = useState(false);
   const [openTiers, setOpenTiers] = useState<string[]>([]);
-  const [selectedCandidates, setSelectedCandidates] = useState<{ [key: string]: string }>({});
+  const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
   const [pickupCandidates, setPickupCandidates] = useState<string[]>([]);
   const [pickupAllSigns, setPickupAllSigns] = useState(false);
 
@@ -106,19 +106,9 @@ export default function Home() {
   }, [statusMessage]);
 
   function toggleCandidate(name: string) {
-    setSelectedCandidates((prev) => {
-      const updated = { ...prev };
-      if (name in updated) {
-        delete updated[name];
-      } else {
-        updated[name] = "";
-      }
-      return updated;
-    });
-  }
-
-  function updateQuantity(name: string, value: string) {
-    setSelectedCandidates((prev) => ({ ...prev, [name]: value }));
+    setSelectedCandidates((prev) =>
+      prev.includes(name) ? prev.filter((c) => c !== name) : [...prev, name]
+    );
   }
 
   function toggleTier(tier: string) {
@@ -158,7 +148,7 @@ export default function Home() {
       setName("");
       setAddress("");
       setEmail("");
-      setSelectedCandidates({});
+      setSelectedCandidates([]);
     } else {
       setStatusMessage("Something went wrong: " + result.error);
     }
@@ -279,8 +269,8 @@ export default function Home() {
               className="pixel-btn flex w-80 items-center justify-between bg-[#3d2817] px-4 py-3 text-left text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
             >
               <span>
-                {Object.keys(selectedCandidates).length > 0
-                  ? `${Object.keys(selectedCandidates).length} candidate(s) selected`
+                {selectedCandidates.length > 0
+                  ? `${selectedCandidates.length} candidate(s) selected`
                   : "Select candidates"}
               </span>
               <span>{candidateDropdownOpen ? "▲" : "▼"}</span>
@@ -328,23 +318,12 @@ export default function Home() {
                                 <label className="flex flex-1 items-center gap-2 text-sm">
                                   <input
                                     type="checkbox"
-                                    checked={candidate in selectedCandidates}
+                                    checked={selectedCandidates.includes(candidate)}
                                     onChange={() => toggleCandidate(candidate)}
                                     className="h-4 w-4 accent-[#ffc72c]"
                                   />
                                   {candidate}
                                 </label>
-
-                                {candidate in selectedCandidates && (
-                                  <input
-                                    type="number"
-                                    min="1"
-                                    value={selectedCandidates[candidate]}
-                                    onChange={(e) => updateQuantity(candidate, e.target.value)}
-                                    placeholder="Qty"
-                                    className="w-16 border-2 border-black bg-[#1a120b] px-2 py-1 text-sm text-[#f5e6c8]"
-                                  />
-                                )}
                               </div>
                             ))}
                           </div>

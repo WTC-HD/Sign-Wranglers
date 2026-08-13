@@ -7,23 +7,18 @@ export async function POST(request: Request) {
 
   const { name, address, email, candidates } = body;
 
-  if (!name || !address || !email || !candidates || Object.keys(candidates).length === 0) {
+  if (!name || !address || !email || !candidates || candidates.length === 0) {
     return NextResponse.json(
       { error: "Missing required fields" },
       { status: 400 }
     );
   }
 
-  const hasInvalidQuantity = Object.values(candidates).some(
-    (quantity) => !quantity || Number(quantity) <= 0
+  // The frontend only sends candidate names now (no quantity picker) -
+  // every selected candidate defaults to a quantity of 1 sign.
+  const candidatesWithQuantity = Object.fromEntries(
+    (candidates as string[]).map((candidateName) => [candidateName, "1"])
   );
-
-  if (hasInvalidQuantity) {
-    return NextResponse.json(
-      { error: "Please enter a quantity for each selected candidate" },
-      { status: 400 }
-    );
-  }
 
   const { data, error } = await supabase
     .from("signs")
@@ -31,7 +26,7 @@ export async function POST(request: Request) {
         name,
         address,
         email,
-        candidates,
+        candidates: candidatesWithQuantity,
         status: "requested",
     })
     .select();
@@ -43,7 +38,7 @@ export async function POST(request: Request) {
   /* Email confirmation disabled until a domain is verified with Resend
      (onboarding@resend.dev can only send to the account owner, not real users).
 
-  const candidateList = Object.entries(candidates)
+  const candidateList = Object.entries(candidatesWithQuantity)
     .map(([candidateName, quantity]) => `${quantity} x ${candidateName}`)
     .join(", ");
 
