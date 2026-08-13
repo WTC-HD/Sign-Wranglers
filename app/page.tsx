@@ -325,14 +325,15 @@ export default function Home() {
                                 key={candidate}
                                 className="flex items-center gap-2 px-2 py-1.5 hover:bg-[#3d2817]"
                               >
-                                <input
-                                  type="checkbox"
-                                  checked={candidate in selectedCandidates}
-                                  onChange={() => toggleCandidate(candidate)}
-                                  className="h-4 w-4 accent-[#ffc72c]"
-                                />
-
-                                <label className="flex-1 text-sm">{candidate}</label>
+                                <label className="flex flex-1 items-center gap-2 text-sm">
+                                  <input
+                                    type="checkbox"
+                                    checked={candidate in selectedCandidates}
+                                    onChange={() => toggleCandidate(candidate)}
+                                    className="h-4 w-4 accent-[#ffc72c]"
+                                  />
+                                  {candidate}
+                                </label>
 
                                 {candidate in selectedCandidates && (
                                   <input
@@ -502,13 +503,15 @@ export default function Home() {
                                     key={candidate}
                                     className="flex items-center gap-2 px-2 py-1.5 hover:bg-[#3d2817]"
                                   >
-                                    <input
-                                      type="checkbox"
-                                      checked={pickupCandidates.includes(candidate)}
-                                      onChange={() => togglePickupCandidates(candidate)}
-                                      className="h-4 w-4 accent-[#ffc72c]"
-                                    />
-                                    <label className="flex-1 text-sm">{candidate}</label>
+                                    <label className="flex flex-1 items-center gap-2 text-sm">
+                                      <input
+                                        type="checkbox"
+                                        checked={pickupCandidates.includes(candidate)}
+                                        onChange={() => togglePickupCandidates(candidate)}
+                                        className="h-4 w-4 accent-[#ffc72c]"
+                                      />
+                                      {candidate}
+                                    </label>
                                   </div>
                                 ))}
                               </div>
