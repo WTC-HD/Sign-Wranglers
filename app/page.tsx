@@ -74,7 +74,6 @@ const CANDIDATE_TIERS = [
 
 export default function Home() {
   const [view, setView] = useState("");
-  const [pickupMode, setPickupMode] = useState("used_website");
 
   const [name, setName] = useState("");
   const [address, setAddress] = useState("");
@@ -154,29 +153,11 @@ export default function Home() {
     }
   }
 
-  async function handlePickupByEmail() {
-    const response = await fetch("/api/pickup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mode: "used_website", email: email }),
-    });
-
-    const result = await response.json();
-
-    if (result.success) {
-      setStatusMessage("Pickup requested");
-      setEmail("");
-    } else {
-      setStatusMessage("Something went wrong: " + result.error);
-    }
-  }
-
-  async function handlePickupByAddress() {
+  async function handlePickupSubmit() {
     const response = await fetch("/api/pickup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        mode: "not_used",
         name: name,
         address: address,
         email: email,
@@ -348,39 +329,6 @@ export default function Home() {
       {/* Page for picking up signs */}
       {view === "pickup" && (
         <div>
-          <button
-            onClick={() => setPickupMode("used_website")}
-            className="pixel-btn mt-8 bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
-          >
-            I&apos;ve used the website for sign dropoff
-          </button>
-
-          <button
-            onClick={() => setPickupMode("not_used")}
-            className="pixel-btn mt-8 bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
-          >
-            I didn&apos;t use the website for sign dropoff
-          </button>
-
-          {pickupMode === "used_website" && (
-            <div>
-              <p className="mt-4">Please enter the email you used in your dropoff request, so we can search our database</p>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
-                className="mt-8 block border-2 border-black bg-[#241a10] px-4 py-2 text-[#f5e6c8]"
-              />
-
-              <button onClick={handlePickupByEmail} className="pixel-btn mt-8 bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]">
-                Submit
-              </button>
-            </div>
-          )}
-
-          {pickupMode === "not_used" && (
-            <div>
               <input
                 ref={nameRef}
                 type="text"
@@ -505,11 +453,9 @@ export default function Home() {
               </div>
               )}
 
-              <button onClick={handlePickupByAddress} className="pixel-btn mt-8 bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]">
+              <button onClick={handlePickupSubmit} className="pixel-btn mt-8 bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]">
                 Submit
               </button>
-            </div>
-          )}
 
           {statusMessage && <p className="mt-4">{statusMessage}</p>}
         </div>
