@@ -17,7 +17,6 @@ const CANDIDATE_TIERS = [
       { category: "Wyoming Superintendent of Public Instruction", items: ["Steve Harshman"] },
       { category: "Wyoming State Auditor", items: ["Kristi Racine"] },
       { category: "Wyoming State Treasurer", items: ["Curt Meier"] },
-      { category: "Statewide Amendments", items: ["No on tax reduction", "Yes on tax reduction"] },
     ],
   },
   {
@@ -64,6 +63,12 @@ const CANDIDATE_TIERS = [
       },
     ],
   },
+  {
+    tier: "Ballot Initatives",
+    groups: [
+        { category: "Property Tax Reduction", items: ["No on tax reduction"]},
+    ]
+  }
 ];
 
 
