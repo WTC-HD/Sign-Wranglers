@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Press_Start_2P } from "next/font/google";
 import "./globals.css";
+import { SITE_CONFIG } from "./config/site";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,8 +20,8 @@ const pixelFont = Press_Start_2P({
 });
 
 export const metadata: Metadata = {
-  title: "Sign Wranglers",
-  description: "Request or return campaign yard signs in Natrona County.",
+  title: SITE_CONFIG.tabTitle,
+  description: SITE_CONFIG.description,
 };
 
 export default function RootLayout({

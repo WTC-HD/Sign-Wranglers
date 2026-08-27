@@ -1,76 +1,7 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-
-const CANDIDATE_TIERS = [
-  {
-    tier: "National",
-    groups: [
-      { category: "US House", items: ["Kevin Christensen"] },
-      { category: "US Senate", items: ["Sam Mead"] },
-    ],
-  },
-  {
-    tier: "Statewide",
-    groups: [
-      { category: "Wyoming Governor", items: ["Eric Barlow"] },
-      { category: "Wyoming Secretary of State", items: ["Robert Short"] },
-      { category: "Wyoming Superintendent of Public Instruction", items: ["Steve Harshman"] },
-      { category: "Wyoming State Auditor", items: ["Kristi Racine"] },
-      { category: "Wyoming State Treasurer", items: ["Curt Meier"] },
-    ],
-  },
-  {
-    tier: "Local",
-    groups: [
-      {
-        category: "Natrona County State House",
-        items: [
-          "District 35 - Chris Dresang",
-          "District 36 - Art Washut",
-          "District 37 - Brian Costello",
-          "District 38 - Robert Hendry",
-          "District 56 - Elissa Campbell",
-          "District 57 - Julie Jarvis",
-          "District 58 - Peter Boyer",
-          "District 59 - J.R. Riggins",
-          "District 62 - Edis Allen",
-        ],
-      },
-      {
-        category: "Natrona County State Senate",
-        items: [
-          "District 27 - Kevin Helling",
-          "District 29 - Lisa Engebretsen",
-        ],
-      },
-      {
-        category: "Natrona County City Council",
-        items: [
-          "Ward I - Brett Hobza",
-          "Ward II - Michael Bond",
-          "Ward II - Shane True",
-          "Ward III - Kaycee Wiita",
-          "Ward III - Brandy Haskins",
-        ],
-      },
-      {
-        category: "Natrona County Commissioners",
-        items: ["Chad McNutt", "Ray Pacheco", "Charles Moore"],
-      },
-      {
-        category: "Natrona County School Board",
-        items: ["Teal-Slate Sign(contains all canidates", "Kevin Christopherson", "Michael Stedillie", "Eric Nelson", "Taylor Rosty", ],
-      },
-    ],
-  },
-  {
-    tier: "Ballot Initatives",
-    groups: [
-        { category: "Property Tax Reduction", items: ["No on tax reduction"]},
-    ]
-  }
-];
-
+import { CANDIDATE_TIERS } from "@/app/config/races";
+import { SITE_CONFIG } from "@/app/config/site";
 
 export default function Home() {
   const [view, setView] = useState("");
@@ -184,21 +115,21 @@ export default function Home() {
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <h1 className="text-2xl text-[#ffc72c] [text-shadow:4px_4px_0_#000]">
-        Natrona County Political Sign Wranglers
+      <h1 className="text-2xl text-brand-accent [text-shadow:4px_4px_0_#000]">
+        {SITE_CONFIG.name}
       </h1>
 
       <div className="mt-8 flex gap-4">
         <button
           onClick={() => { setView("request"); setFormStep(1); }}
-          className="pixel-btn bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
+          className="pixel-btn bg-brand-primary px-4 py-3 text-xs text-brand-accent hover:bg-brand-primary-hover"
         >
           Sign(s) Dropoff
         </button>
 
         <button
           onClick={() => { setView("pickup"); setFormStep(1); }}
-          className="pixel-btn bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
+          className="pixel-btn bg-brand-primary px-4 py-3 text-xs text-brand-accent hover:bg-brand-primary-hover"
         >
           Sign(s) Removal
         </button>
@@ -213,7 +144,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => setCandidateDropdownOpen(!candidateDropdownOpen)}
-                  className="pixel-btn flex w-80 items-center justify-between bg-[#3d2817] px-4 py-3 text-left text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
+                  className="pixel-btn flex w-80 items-center justify-between bg-brand-primary px-4 py-3 text-left text-xs text-brand-accent hover:bg-brand-primary-hover"
                 >
                   <span>
                     {selectedCandidates.length > 0
@@ -230,18 +161,18 @@ export default function Home() {
                       onClick={() => setCandidateDropdownOpen(false)}
                     />
                     <div
-                      className="pixel-panel absolute z-10 mt-2 max-h-80 w-80 overflow-y-auto bg-[#241a10] p-4"
+                      className="pixel-panel absolute z-10 mt-2 max-h-80 w-80 overflow-y-auto bg-surface p-4"
                       onKeyDown={closeDropdownOnEnter}
                     >
                     {CANDIDATE_TIERS.map((tierGroup, tierIndex) => (
                       <div
                         key={tierGroup.tier}
-                        className={tierIndex > 0 ? "mt-4 border-t border-[#5a3d24] pt-4" : ""}
+                        className={tierIndex > 0 ? "mt-4 border-t border-brand-primary-hover pt-4" : ""}
                       >
                         <button
                           type="button"
                           onClick={() => toggleTier(tierGroup.tier)}
-                          className="flex w-full items-center justify-between py-1 text-xs uppercase tracking-wide text-[#ffc72c]"
+                          className="flex w-full items-center justify-between py-1 text-xs uppercase tracking-wide text-brand-accent"
                         >
                           <span>{tierGroup.tier}</span>
                           <span>{openTiers.includes(tierGroup.tier) ? "▲" : "▼"}</span>
@@ -252,22 +183,22 @@ export default function Home() {
                             {tierGroup.groups.map((group, index) => (
                               <div
                                 key={group.category}
-                                className={index > 0 ? "mt-3 border-t border-[#3d2817] pt-3" : ""}
+                                className={index > 0 ? "mt-3 border-t border-brand-primary pt-3" : ""}
                               >
-                                <p className="mb-2 text-xs uppercase tracking-wide text-[#c9a227]">
+                                <p className="mb-2 text-xs uppercase tracking-wide text-brand-accent-muted">
                                   {group.category}
                                 </p>
                                 {group.items.map((candidate) => (
                                   <div
                                     key={candidate}
-                                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-[#3d2817]"
+                                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-primary"
                                   >
                                     <label className="flex flex-1 items-center gap-2 text-sm">
                                       <input
                                         type="checkbox"
                                         checked={selectedCandidates.includes(candidate)}
                                         onChange={() => toggleCandidate(candidate)}
-                                        className="h-4 w-4 accent-[#ffc72c]"
+                                        className="h-4 w-4 accent-brand-accent"
                                       />
                                       {candidate}
                                     </label>
@@ -286,7 +217,7 @@ export default function Home() {
 
               <button
                 onClick={() => setFormStep(2)}
-                className="pixel-btn mt-8 bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
+                className="pixel-btn mt-8 bg-brand-primary px-4 py-3 text-xs text-brand-accent hover:bg-brand-primary-hover"
               >
                 Next
               </button>
@@ -307,7 +238,7 @@ export default function Home() {
                   }
                 }}
                 placeholder="Enter your name"
-                className="mt-8 block border-2 border-black bg-[#241a10] px-4 py-2 text-[#f5e6c8]"
+                className="mt-8 block border-2 border-black bg-surface px-4 py-2 text-foreground"
               />
 
               <input
@@ -322,7 +253,7 @@ export default function Home() {
                   }
                 }}
                 placeholder="Enter your address"
-                className="mt-8 block border-2 border-black bg-[#241a10] px-4 py-2 text-[#f5e6c8]"
+                className="mt-8 block border-2 border-black bg-surface px-4 py-2 text-foreground"
               />
 
               <input
@@ -331,19 +262,19 @@ export default function Home() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="mt-8 block border-2 border-black bg-[#241a10] px-4 py-2 text-[#f5e6c8]"
+                className="mt-8 block border-2 border-black bg-surface px-4 py-2 text-foreground"
               />
 
               <div className="mt-8 flex gap-4">
                 <button
                   onClick={() => setFormStep(1)}
-                  className="pixel-btn bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
+                  className="pixel-btn bg-brand-primary px-4 py-3 text-xs text-brand-accent hover:bg-brand-primary-hover"
                 >
                   Back
                 </button>
                 <button
                   onClick={handleSubmit}
-                  className="pixel-btn bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
+                  className="pixel-btn bg-brand-primary px-4 py-3 text-xs text-brand-accent hover:bg-brand-primary-hover"
                 >
                   Submit
                 </button>
@@ -372,7 +303,7 @@ export default function Home() {
                   }
                 }}
                 placeholder="Enter name here"
-                className="mt-8 block border-2 border-black bg-[#241a10] px-4 py-2 text-[#f5e6c8]"
+                className="mt-8 block border-2 border-black bg-surface px-4 py-2 text-foreground"
               />
               <input
                 ref={addressRef}
@@ -386,7 +317,7 @@ export default function Home() {
                   }
                 }}
                 placeholder="Enter the address"
-                className="mt-8 block border-2 border-black bg-[#241a10] px-4 py-2 text-[#f5e6c8]"
+                className="mt-8 block border-2 border-black bg-surface px-4 py-2 text-foreground"
               />
               <input
                 ref={emailRef}
@@ -394,12 +325,12 @@ export default function Home() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email (optional, for a confirmation)"
-                className="mt-8 block border-2 border-black bg-[#241a10] px-4 py-2 text-[#f5e6c8]"
+                className="mt-8 block border-2 border-black bg-surface px-4 py-2 text-foreground"
               />
 
               <button
                 onClick={() => setFormStep(2)}
-                className="pixel-btn mt-8 bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
+                className="pixel-btn mt-8 bg-brand-primary px-4 py-3 text-xs text-brand-accent hover:bg-brand-primary-hover"
               >
                 Next
               </button>
@@ -413,7 +344,7 @@ export default function Home() {
                   type="checkbox"
                   checked={pickupAllSigns}
                   onChange={() => setPickupAllSigns(!pickupAllSigns)}
-                  className="h-4 w-4 accent-[#ffc72c]"
+                  className="h-4 w-4 accent-brand-accent"
                 />
                 Pick up all signs in my yard
               </label>
@@ -423,7 +354,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => setCandidateDropdownOpen(!candidateDropdownOpen)}
-                  className="pixel-btn flex w-80 items-center justify-between bg-[#3d2817] px-4 py-3 text-left text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
+                  className="pixel-btn flex w-80 items-center justify-between bg-brand-primary px-4 py-3 text-left text-xs text-brand-accent hover:bg-brand-primary-hover"
                 >
                   <span>
                     {pickupCandidates.length > 0
@@ -440,18 +371,18 @@ export default function Home() {
                       onClick={() => setCandidateDropdownOpen(false)}
                     />
                     <div
-                      className="pixel-panel absolute z-10 mt-2 max-h-80 w-80 overflow-y-auto bg-[#241a10] p-4"
+                      className="pixel-panel absolute z-10 mt-2 max-h-80 w-80 overflow-y-auto bg-surface p-4"
                       onKeyDown={closeDropdownOnEnter}
                     >
                     {CANDIDATE_TIERS.map((tierGroup, tierIndex) => (
                       <div
                         key={tierGroup.tier}
-                        className={tierIndex > 0 ? "mt-4 border-t border-[#5a3d24] pt-4" : ""}
+                        className={tierIndex > 0 ? "mt-4 border-t border-brand-primary-hover pt-4" : ""}
                       >
                         <button
                           type="button"
                           onClick={() => toggleTier(tierGroup.tier)}
-                          className="flex w-full items-center justify-between py-1 text-xs uppercase tracking-wide text-[#ffc72c]"
+                          className="flex w-full items-center justify-between py-1 text-xs uppercase tracking-wide text-brand-accent"
                         >
                           <span>{tierGroup.tier}</span>
                           <span>{openTiers.includes(tierGroup.tier) ? "▲" : "▼"}</span>
@@ -462,22 +393,22 @@ export default function Home() {
                             {tierGroup.groups.map((group, index) => (
                               <div
                                 key={group.category}
-                                className={index > 0 ? "mt-3 border-t border-[#3d2817] pt-3" : ""}
+                                className={index > 0 ? "mt-3 border-t border-brand-primary pt-3" : ""}
                               >
-                                <p className="mb-2 text-xs uppercase tracking-wide text-[#c9a227]">
+                                <p className="mb-2 text-xs uppercase tracking-wide text-brand-accent-muted">
                                   {group.category}
                                 </p>
                                 {group.items.map((candidate) => (
                                   <div
                                     key={candidate}
-                                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-[#3d2817]"
+                                    className="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-primary"
                                   >
                                     <label className="flex flex-1 items-center gap-2 text-sm">
                                       <input
                                         type="checkbox"
                                         checked={pickupCandidates.includes(candidate)}
                                         onChange={() => togglePickupCandidates(candidate)}
-                                        className="h-4 w-4 accent-[#ffc72c]"
+                                        className="h-4 w-4 accent-brand-accent"
                                       />
                                       {candidate}
                                     </label>
@@ -498,13 +429,13 @@ export default function Home() {
               <div className="mt-8 flex gap-4">
                 <button
                   onClick={() => setFormStep(1)}
-                  className="pixel-btn bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
+                  className="pixel-btn bg-brand-primary px-4 py-3 text-xs text-brand-accent hover:bg-brand-primary-hover"
                 >
                   Back
                 </button>
                 <button
                   onClick={handlePickupSubmit}
-                  className="pixel-btn bg-[#3d2817] px-4 py-3 text-xs text-[#ffc72c] hover:bg-[#5a3d24]"
+                  className="pixel-btn bg-brand-primary px-4 py-3 text-xs text-brand-accent hover:bg-brand-primary-hover"
                 >
                   Submit
                 </button>

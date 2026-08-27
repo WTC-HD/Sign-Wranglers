@@ -3,6 +3,11 @@
 :root {
   --background: #1a120b;
   --foreground: #f5e6c8;
+  --brand-primary: #3d2817;
+  --brand-primary-hover: #5a3d24;
+  --brand-accent: #ffc72c;
+  --brand-accent-muted: #c9a227;
+  --surface: #241a10;
 }
 
 @theme inline {
@@ -11,24 +16,25 @@
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
   --font-pixel: var(--font-pixel);
+
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-primary-hover: var(--brand-primary-hover);
+  --color-brand-accent: var(--brand-accent);
+  --color-brand-accent-muted: var(--brand-accent-muted);
+  --color-surface: var(--surface);
 }
 
-/* The pixel font is the site's one and only font now — set here,
-   once, so every element inherits it automatically. No need to add
-   a font class by hand to each individual button/heading/etc. */
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-pixel), Arial, Helvetica, sans-serif;
 }
 
-/* Pixel-art theme: flatten every rounded corner, everywhere. */
 * {
   border-radius: 0 !important;
 }
 
-/* Chunky, hard-edged "arcade button" look: thick border, offset
-   shadow with no blur, and a "pressed in" effect on click. */
+
 .pixel-btn {
   border: 3px solid #000000;
   box-shadow: 4px 4px 0 0 #000000;
