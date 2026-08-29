@@ -43,7 +43,7 @@ export default function Logo() {
 
       <text fontSize="13" fill="#ffc72c" letterSpacing=".1">
         <textPath href="#logo-bottom-arc" startOffset="50%" textAnchor="middle">
-          NON-PARTICAL ELECTION INFO AND SIGNS
+          NON-PARTISAN ELECTION INFO AND SIGNS
         </textPath>
       </text>
     </svg>
