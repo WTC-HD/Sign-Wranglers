@@ -1,7 +1,8 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
-import { CANDIDATE_TIERS } from "@/app/config/races";
+import { CANDIDATE_TIERS, partyAbbreviation } from "@/app/config/races";
 import { SITE_CONFIG } from "@/app/config/site";
+import Link from "next/link";
 
 export default function Home() {
   const [view, setView] = useState("");
@@ -133,6 +134,13 @@ export default function Home() {
         >
           Sign(s) Removal
         </button>
+
+        <Link
+          href="/candidates"
+          className="pixel-btn bg-brand-primary px-4 py-3 text-xs text-brand-accent hover:bg-brand-primary-hover"
+        >
+          Candidate Directory
+        </Link>
       </div>
 
       {/* Page for requesting a sign */}
@@ -190,17 +198,17 @@ export default function Home() {
                                 </p>
                                 {group.items.map((candidate) => (
                                   <div
-                                    key={candidate}
+                                    key={candidate.name}
                                     className="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-primary"
                                   >
                                     <label className="flex flex-1 items-center gap-2 text-sm">
                                       <input
                                         type="checkbox"
-                                        checked={selectedCandidates.includes(candidate)}
-                                        onChange={() => toggleCandidate(candidate)}
+                                        checked={selectedCandidates.includes(candidate.name)}
+                                        onChange={() => toggleCandidate(candidate.name)}
                                         className="h-4 w-4 accent-brand-accent"
                                       />
-                                      {candidate}
+                                      {candidate.name} {partyAbbreviation(candidate.party)}
                                     </label>
                                   </div>
                                 ))}
@@ -400,17 +408,17 @@ export default function Home() {
                                 </p>
                                 {group.items.map((candidate) => (
                                   <div
-                                    key={candidate}
+                                    key={candidate.name}
                                     className="flex items-center gap-2 px-2 py-1.5 hover:bg-brand-primary"
                                   >
                                     <label className="flex flex-1 items-center gap-2 text-sm">
                                       <input
                                         type="checkbox"
-                                        checked={pickupCandidates.includes(candidate)}
-                                        onChange={() => togglePickupCandidates(candidate)}
+                                        checked={pickupCandidates.includes(candidate.name)}
+                                        onChange={() => togglePickupCandidates(candidate.name)}
                                         className="h-4 w-4 accent-brand-accent"
                                       />
-                                      {candidate}
+                                      {candidate.name} {partyAbbreviation(candidate.party)}
                                     </label>
                                   </div>
                                 ))}
