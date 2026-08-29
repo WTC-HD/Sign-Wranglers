@@ -37,8 +37,10 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
         {children}
+        {/* Mounted once here (not per-page) so every route gets tracked,
+            not just the homepage. Renders nothing visible. */}
         <Analytics />
-        </body>
+      </body>
     </html>
   );
 }

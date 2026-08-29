@@ -20,6 +20,9 @@ export default function Home() {
 
   const [statusMessage, setStatusMessage] = useState("");
 
+  const [pollingAddress, setPollingAddress] = useState("");
+  const [showPollingPopup, setShowPollingPopup] = useState(false);
+
   const nameRef = useRef<HTMLInputElement>(null);
   const addressRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
@@ -96,6 +99,9 @@ export default function Home() {
         name: name,
         address: address,
         email: email,
+        // "All signs in yard" isn't a real candidate name - it's a sentinel
+        // value so the admin dashboard can show what was actually requested
+        // without a separate database column for this one edge case.
         candidates: pickupAllSigns ? ["All signs in yard"] : pickupCandidates
       }),
     });
@@ -143,6 +149,70 @@ export default function Home() {
           {SITE_CONFIG.name}
         </h1>
 
+        <div className="pixel-panel mt-8 w-80 bg-surface p-4">
+          <p className="mb-2 text-xs uppercase tracking-wide text-brand-accent-muted">
+            Find Your Polling Place
+          </p>
+
+          <input
+            type="text"
+            value={pollingAddress}
+            onChange={(e) => setPollingAddress(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                setShowPollingPopup(true);
+              }
+            }}
+            placeholder="Enter your address"
+            className="block w-full border-2 border-black bg-surface px-3 py-2 text-xs text-foreground"
+          />
+
+          <button
+            onClick={() => setShowPollingPopup(true)}
+            disabled={!pollingAddress}
+            className="pixel-btn mt-2 w-full bg-brand-primary px-3 py-2 text-xs text-brand-accent hover:bg-brand-primary-hover disabled:opacity-50"
+          >
+            Find My Polling Place
+          </button>
+        </div>
+
+        {/* Wyoming's election isn't indexed by the Google Civic API yet
+            (see app/api/polling-location/route.ts), so a real lookup
+            fails for every address right now. Showing this instead of
+            attempting a lookup that we know will fail. */}
+        {showPollingPopup && (
+          <div
+            className="fixed inset-0 z-20 flex items-center justify-center bg-black/60"
+            onClick={() => setShowPollingPopup(false)}
+          >
+            <div
+              className="pixel-panel mx-4 w-80 bg-surface p-6 text-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <p className="text-xs text-brand-accent">
+                Check back 2-3 weeks before an election to look up your polling place.
+              </p>
+
+              <a
+                href="https://sos.wyo.gov/Elections/PollPlace/default.aspx"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-3 block text-xs text-brand-accent-muted underline"
+              >
+                Or look up your polling place on the official WY SOS site
+              </a>
+
+              <button
+                onClick={() => setShowPollingPopup(false)}
+                className="pixel-btn mt-4 bg-brand-primary px-3 py-2 text-xs text-brand-accent hover:bg-brand-primary-hover"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        )}
+
       <div className="mt-8 flex gap-4">
         <button
           onClick={() => { setView("request"); setFormStep(1); }}
@@ -187,6 +257,9 @@ export default function Home() {
 
                 {candidateDropdownOpen && (
                   <>
+                    {/* Invisible full-screen div behind the dropdown panel -
+                        clicking anywhere outside the panel hits this and
+                        closes it, without needing a document-level listener. */}
                     <div
                       className="fixed inset-0 z-0"
                       onClick={() => setCandidateDropdownOpen(false)}
@@ -397,6 +470,9 @@ export default function Home() {
 
                 {candidateDropdownOpen && (
                   <>
+                    {/* Invisible full-screen div behind the dropdown panel -
+                        clicking anywhere outside the panel hits this and
+                        closes it, without needing a document-level listener. */}
                     <div
                       className="fixed inset-0 z-0"
                       onClick={() => setCandidateDropdownOpen(false)}

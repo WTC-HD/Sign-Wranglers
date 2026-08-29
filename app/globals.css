@@ -55,6 +55,11 @@ body {
   white-space: nowrap;
 }
 
+/* Relies on .ticker-track rendering its content twice (two identical
+   <span> children in the JSX). Sliding left by 50% of the total width
+   moves exactly one copy's width - the moment it loops back to 0%, the
+   second copy is sitting exactly where the first one started, so the
+   loop reads as seamless instead of jump-cutting. */
 .ticker-track {
   display: inline-flex;
   animation: ticker-scroll 30s linear infinite;

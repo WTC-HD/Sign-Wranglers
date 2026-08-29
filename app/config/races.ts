@@ -15,6 +15,9 @@ export function partyAbbreviation(party?: string) {
   return "";
 }
 
+// The : Tier[] annotation matters here - without it, TypeScript infers a
+// narrow type straight from this literal array, and any candidate missing
+// an optional field (like party or website) breaks access to it elsewhere.
 export const CANDIDATE_TIERS: Tier[] = [
   {
     tier: "National",

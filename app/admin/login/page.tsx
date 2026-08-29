@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function AdminLoginPage(){
@@ -9,17 +9,10 @@ export default function AdminLoginPage(){
     const router = useRouter();
     const [statusMessage, setStatusMessage] = useState("");
 
-    useEffect(() => {
-        async function loadSigns(){
-
-        }
-        loadSigns();
-    }, []);
-
     async function handleLogin(){
         const response = await fetch("/api/admin/login", {
             method: "POST",
-            headers: { "Content-Type": "aplication/json"},
+            headers: { "Content-Type": "application/json"},
             body: JSON.stringify({ password })
         });
 

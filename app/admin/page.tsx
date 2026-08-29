@@ -9,6 +9,9 @@ type Sign = {
   email: string;
   status: string;
   pickup_requested: boolean;
+  // Object shape ({name: quantity}) comes from a dropoff request; array
+  // shape (just names, no quantity) comes from a pickup request. Both are
+  // written by different API routes, so this type has to allow both.
   candidates: Record<string, string> | string[] | null;
 };
 

@@ -19,6 +19,9 @@ export async function POST(request: Request){
             { status: 401}
         );
     } else {
+        // The cookie's value is the password itself, not a signed token -
+        // a simplified shared secret. proxy.ts checks it by comparing
+        // straight against ADMIN_PASSWORD, no separate session store needed.
         storeCookies.set("admin_session", process.env.ADMIN_PASSWORD ?? "", {
             httpOnly: true,
             secure: true,
