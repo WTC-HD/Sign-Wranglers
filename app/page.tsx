@@ -137,12 +137,11 @@ export default function Home() {
     <main className="flex min-h-screen flex-col pb-32">
       <Ticker />
 
-      {/* flex-1 stretches this to fill all remaining viewport height
-          (main is min-h-screen). Polling place and the logo sit at their
-          natural size up top; the button area is the flex-1 element, so
-          it absorbs whatever's left and the 70/30 split (grid-rows-[7fr_3fr])
-          has real space to divide. */}
-      <div className="flex flex-1 flex-col items-center gap-4 px-6 py-8 text-center sm:px-12 md:px-16 md:py-10">
+      {/* flex-1 + justify-center vertically centers this whole block as a
+          tight unit within the remaining viewport height, instead of
+          stretching the button area to fill leftover space - that used to
+          leave a big gap between the top row and the buttons. */}
+      <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-8 text-center sm:px-12 md:px-16 md:py-10">
         {/* Shares the same max-w-3xl grid-cols-2 shape as the Candidate
             Directory / Voter Info row below, so the Logo's column lines
             up directly above Candidate Directory, and the polling panel's
@@ -187,43 +186,39 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid w-full flex-1 grid-rows-[7fr_3fr] gap-4">
-          <div className="flex items-center justify-center">
-            <div className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2">
-              <Link
-                href="/candidates"
-                className="pixel-btn flex items-center justify-center gap-3 bg-brand-primary px-4 py-4 text-sm text-brand-accent hover:bg-brand-primary-hover"
-              >
-                <Image src="/logo-cowboy-gold.png" alt="" width={48} height={48} className="h-12 w-12" />
-                Candidate Directory
-              </Link>
+        <div className="flex w-full flex-col items-center gap-4">
+          <div className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2">
+            <Link
+              href="/candidates"
+              className="pixel-btn flex items-center justify-center gap-3 bg-brand-primary px-4 py-4 text-sm text-brand-accent hover:bg-brand-primary-hover"
+            >
+              <Image src="/logo-cowboy-gold.png" alt="" width={48} height={48} className="h-12 w-12" />
+              Candidate Directory
+            </Link>
 
-              <button
-                onClick={() => setShowRegistrationGuide(true)}
-                className="pixel-btn flex items-center justify-center gap-3 bg-brand-primary px-4 py-4 text-sm text-brand-accent hover:bg-brand-primary-hover"
-              >
-                <Image src="/registration-icon.png" alt="" width={48} height={48} className="h-12 w-12" />
-                Voter Info
-              </button>
-            </div>
+            <button
+              onClick={() => setShowRegistrationGuide(true)}
+              className="pixel-btn flex items-center justify-center gap-3 bg-brand-primary px-4 py-4 text-sm text-brand-accent hover:bg-brand-primary-hover"
+            >
+              <Image src="/registration-icon.png" alt="" width={48} height={48} className="h-12 w-12" />
+              Voter Info
+            </button>
           </div>
 
-          <div className="flex items-center justify-center">
-            <div className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2">
-              <button
-                onClick={() => { setView("request"); setFormStep(1); }}
-                className="pixel-btn bg-brand-primary px-4 py-4 text-sm text-brand-accent hover:bg-brand-primary-hover"
-              >
-                Sign(s) Dropoff
-              </button>
+          <div className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2">
+            <button
+              onClick={() => { setView("request"); setFormStep(1); }}
+              className="pixel-btn bg-brand-primary px-4 py-4 text-sm text-brand-accent hover:bg-brand-primary-hover"
+            >
+              Sign(s) Dropoff
+            </button>
 
-              <button
-                onClick={() => { setView("pickup"); setFormStep(1); }}
-                className="pixel-btn bg-brand-primary px-4 py-4 text-sm text-brand-accent hover:bg-brand-primary-hover"
-              >
-                Sign(s) Removal
-              </button>
-            </div>
+            <button
+              onClick={() => { setView("pickup"); setFormStep(1); }}
+              className="pixel-btn bg-brand-primary px-4 py-4 text-sm text-brand-accent hover:bg-brand-primary-hover"
+            >
+              Sign(s) Removal
+            </button>
           </div>
         </div>
       </div>
