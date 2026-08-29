@@ -34,7 +34,6 @@ body {
   border-radius: 0 !important;
 }
 
-
 .pixel-btn {
   border: 3px solid #000000;
   box-shadow: 4px 4px 0 0 #000000;
@@ -58,7 +57,7 @@ body {
 
 .ticker-track {
   display: inline-flex;
-  animation: ticker-scroll 25s linear infinite;
+  animation: ticker-scroll 30s linear infinite;
 }
 
 .ticker-track span {
@@ -66,10 +65,10 @@ body {
 }
 
 @keyframes ticker-scroll {
-  from {
+  from
+  {
     transform: translateX(0);
-  }
-  to {
+  } to {
     transform: translateX(-50%);
   }
 }

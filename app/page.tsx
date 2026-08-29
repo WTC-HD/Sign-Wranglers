@@ -2,7 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { CANDIDATE_TIERS, partyAbbreviation } from "@/app/config/races";
 import { SITE_CONFIG } from "@/app/config/site";
-import { ELECTION_INFO } from "@/app/config/election";
+import { ELECTION_INFO } from "./config/election";
 import Link from "next/link";
 
 export default function Home() {
@@ -116,12 +116,15 @@ export default function Home() {
   }
 
   return (
+
     <main className="flex min-h-screen flex-col items-center">
       <div className="ticker w-full border-b-[3px] border-black bg-brand-primary py-2">
         <div className="ticker-track text-xs text-brand-accent">
           {[0, 1].map((i) => (
             <span key={i}>
-              🗳 {ELECTION_INFO.name}: {ELECTION_INFO.date} — Polls open {ELECTION_INFO.opens} to {ELECTION_INFO.closes}. Source:{" "}
+              🗳 {ELECTION_INFO.name}: {ELECTION_INFO.date} 
+               — Polls open {ELECTION_INFO.opens} to {ELECTION_INFO.closes}.
+               - {ELECTION_INFO.otherInfo} Source:{" "}
               <a
                 href={ELECTION_INFO.sourceUrl}
                 target="_blank"
