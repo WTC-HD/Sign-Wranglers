@@ -50,3 +50,26 @@ body {
   border: 3px solid #000000;
   box-shadow: 6px 6px 0 0 #000000;
 }
+
+.ticker {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.ticker-track {
+  display: inline-flex;
+  animation: ticker-scroll 25s linear infinite;
+}
+
+.ticker-track span {
+  padding-right: 4rem;
+}
+
+@keyframes ticker-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}

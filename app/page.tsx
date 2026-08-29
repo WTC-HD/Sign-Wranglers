@@ -2,6 +2,7 @@
 import { useState, useEffect, useRef } from "react";
 import { CANDIDATE_TIERS, partyAbbreviation } from "@/app/config/races";
 import { SITE_CONFIG } from "@/app/config/site";
+import { ELECTION_INFO } from "@/app/config/election";
 import Link from "next/link";
 
 export default function Home() {
@@ -115,10 +116,29 @@ export default function Home() {
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-24">
-      <h1 className="text-2xl text-brand-accent [text-shadow:4px_4px_0_#000]">
-        {SITE_CONFIG.name}
-      </h1>
+    <main className="flex min-h-screen flex-col items-center">
+      <div className="ticker w-full border-b-[3px] border-black bg-brand-primary py-2">
+        <div className="ticker-track text-xs text-brand-accent">
+          {[0, 1].map((i) => (
+            <span key={i}>
+              🗳 {ELECTION_INFO.name}: {ELECTION_INFO.date} — Polls open {ELECTION_INFO.opens} to {ELECTION_INFO.closes}. Source:{" "}
+              <a
+                href={ELECTION_INFO.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline"
+              >
+                {ELECTION_INFO.sourceLabel}
+              </a>
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <div className="flex flex-col items-center justify-center p-24">
+        <h1 className="text-2xl text-brand-accent [text-shadow:4px_4px_0_#000]">
+          {SITE_CONFIG.name}
+        </h1>
 
       <div className="mt-8 flex gap-4">
         <button
@@ -454,6 +474,7 @@ export default function Home() {
           {statusMessage && <p className="mt-4">{statusMessage}</p>}
         </div>
       )}
+      </div>
     </main>
   );
 }
