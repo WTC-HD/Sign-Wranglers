@@ -2,7 +2,9 @@
 import { useState, useEffect, useRef } from "react";
 import { CANDIDATE_TIERS, partyAbbreviation } from "@/app/config/races";
 import { SITE_CONFIG } from "@/app/config/site";
-import { ELECTION_INFO } from "./config/election";
+import Ticker from "@/app/components/Ticker";
+import FeedbackSurvey from "@/app/components/FeedbackSurvey";
+import { trackEventOnce } from "@/app/lib/trackEvent";
 import Link from "next/link";
 
 export default function Home() {
@@ -22,6 +24,7 @@ export default function Home() {
 
   const [pollingAddress, setPollingAddress] = useState("");
   const [showPollingPopup, setShowPollingPopup] = useState(false);
+  const [showRegistrationGuide, setShowRegistrationGuide] = useState(false);
 
   const nameRef = useRef<HTMLInputElement>(null);
   const addressRef = useRef<HTMLInputElement>(null);
@@ -123,33 +126,15 @@ export default function Home() {
 
   return (
 
-    <main className="flex min-h-screen flex-col items-center">
-      <div className="ticker w-full border-b-[3px] border-black bg-brand-primary py-2">
-        <div className="ticker-track text-xs text-brand-accent">
-          {[0, 1].map((i) => (
-            <span key={i}>
-              🗳 {ELECTION_INFO.name}: {ELECTION_INFO.date} 
-               — Polls open {ELECTION_INFO.opens} to {ELECTION_INFO.closes}.
-               - {ELECTION_INFO.otherInfo} Source:{" "}
-              <a
-                href={ELECTION_INFO.sourceUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline"
-              >
-                {ELECTION_INFO.sourceLabel}
-              </a>
-            </span>
-          ))}
-        </div>
-      </div>
+    <main className="flex min-h-screen flex-col items-center pb-48">
+      <Ticker />
 
-      <div className="flex flex-col items-center justify-center p-24">
+      <div className="flex flex-col items-center justify-center px-6 pt-6 pb-8 text-center sm:px-12 sm:pt-12 md:px-24 md:pt-24">
         <h1 className="text-2xl text-brand-accent [text-shadow:4px_4px_0_#000]">
           {SITE_CONFIG.name}
         </h1>
 
-        <div className="pixel-panel mt-8 w-80 bg-surface p-4">
+        <div className="pixel-panel mt-8 w-full max-w-xs bg-surface p-4">
           <p className="mb-2 text-xs uppercase tracking-wide text-brand-accent-muted">
             Find Your Polling Place
           </p>
@@ -159,9 +144,10 @@ export default function Home() {
             value={pollingAddress}
             onChange={(e) => setPollingAddress(e.target.value)}
             onKeyDown={(e) => {
-              if (e.key === "Enter") {
+              if (e.key === "Enter" && pollingAddress) {
                 e.preventDefault();
                 setShowPollingPopup(true);
+                trackEventOnce("polling_lookup");
               }
             }}
             placeholder="Enter your address"
@@ -169,7 +155,10 @@ export default function Home() {
           />
 
           <button
-            onClick={() => setShowPollingPopup(true)}
+            onClick={() => {
+              setShowPollingPopup(true);
+              trackEventOnce("polling_lookup");
+            }}
             disabled={!pollingAddress}
             className="pixel-btn mt-2 w-full bg-brand-primary px-3 py-2 text-xs text-brand-accent hover:bg-brand-primary-hover disabled:opacity-50"
           >
@@ -187,7 +176,7 @@ export default function Home() {
             onClick={() => setShowPollingPopup(false)}
           >
             <div
-              className="pixel-panel mx-4 w-80 bg-surface p-6 text-center"
+              className="pixel-panel mx-4 w-full max-w-xs bg-surface p-6 text-center"
               onClick={(e) => e.stopPropagation()}
             >
               <p className="text-xs text-brand-accent">
@@ -213,7 +202,21 @@ export default function Home() {
           </div>
         )}
 
-      <div className="mt-8 flex gap-4">
+      <div className="mt-8 flex flex-wrap justify-center gap-4">
+        <Link
+          href="/candidates"
+          className="pixel-btn bg-brand-primary px-4 py-3 text-xs text-brand-accent hover:bg-brand-primary-hover"
+        >
+          Candidate Directory
+        </Link>
+
+        <button
+          onClick={() => setShowRegistrationGuide(true)}
+          className="pixel-btn bg-brand-primary px-4 py-3 text-xs text-brand-accent hover:bg-brand-primary-hover"
+        >
+          Voter Registration Guide
+        </button>
+
         <button
           onClick={() => { setView("request"); setFormStep(1); }}
           className="pixel-btn bg-brand-primary px-4 py-3 text-xs text-brand-accent hover:bg-brand-primary-hover"
@@ -227,14 +230,66 @@ export default function Home() {
         >
           Sign(s) Removal
         </button>
-
-        <Link
-          href="/candidates"
-          className="pixel-btn bg-brand-primary px-4 py-3 text-xs text-brand-accent hover:bg-brand-primary-hover"
-        >
-          Candidate Directory
-        </Link>
       </div>
+
+      {showRegistrationGuide && (
+        <div
+          className="fixed inset-0 z-20 flex items-center justify-center bg-black/60"
+          onClick={() => setShowRegistrationGuide(false)}
+        >
+          <div
+            className="pixel-panel mx-4 w-full max-w-sm max-h-[80vh] overflow-y-auto bg-surface p-6 text-left"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="mb-3 text-sm text-brand-accent">Voter Registration Guide</p>
+
+            <p className="mb-1 text-xs uppercase tracking-wide text-brand-accent-muted">
+              Who Can Register
+            </p>
+            <p className="mb-3 text-xs text-brand-accent">
+              You must be 18 or older on Election Day, a U.S. citizen, and a
+              Wyoming resident for at least 30 days before the election. Past
+              felony convictions don&apos;t disqualify you if your voting
+              rights have been restored.
+            </p>
+
+            <p className="mb-1 text-xs uppercase tracking-wide text-brand-accent-muted">
+              What To Bring
+            </p>
+            <p className="mb-3 text-xs text-brand-accent">
+              A valid Wyoming driver&apos;s license. If you don&apos;t have
+              one, bring the last four digits of your Social Security number
+              plus another form of ID (passport, military ID, tribal ID,
+              student ID, etc.).
+            </p>
+
+            <p className="mb-1 text-xs uppercase tracking-wide text-brand-accent-muted">
+              Ways To Register
+            </p>
+            <p className="mb-3 text-xs text-brand-accent">
+              In person at your county clerk&apos;s office, by mail (notarized,
+              at least 14 days before the election), or same-day at your
+              polling place on Election Day itself.
+            </p>
+
+            <a
+              href="https://sos.wyo.gov/elections/state/registeringtovote.aspx"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mb-4 block text-xs text-brand-accent-muted underline"
+            >
+              Full details & registration form: Wyoming Secretary of State
+            </a>
+
+            <button
+              onClick={() => setShowRegistrationGuide(false)}
+              className="pixel-btn bg-brand-primary px-3 py-2 text-xs text-brand-accent hover:bg-brand-primary-hover"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Page for requesting a sign */}
       {view === "request" && (
@@ -245,7 +300,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => setCandidateDropdownOpen(!candidateDropdownOpen)}
-                  className="pixel-btn flex w-80 items-center justify-between bg-brand-primary px-4 py-3 text-left text-xs text-brand-accent hover:bg-brand-primary-hover"
+                  className="pixel-btn flex w-full max-w-xs items-center justify-between bg-brand-primary px-4 py-3 text-left text-xs text-brand-accent hover:bg-brand-primary-hover"
                 >
                   <span>
                     {selectedCandidates.length > 0
@@ -265,7 +320,7 @@ export default function Home() {
                       onClick={() => setCandidateDropdownOpen(false)}
                     />
                     <div
-                      className="pixel-panel absolute z-10 mt-2 max-h-80 w-80 overflow-y-auto bg-surface p-4"
+                      className="pixel-panel absolute z-10 mt-2 max-h-80 w-full max-w-xs overflow-y-auto bg-surface p-4"
                       onKeyDown={closeDropdownOnEnter}
                     >
                     {CANDIDATE_TIERS.map((tierGroup, tierIndex) => (
@@ -458,7 +513,7 @@ export default function Home() {
                 <button
                   type="button"
                   onClick={() => setCandidateDropdownOpen(!candidateDropdownOpen)}
-                  className="pixel-btn flex w-80 items-center justify-between bg-brand-primary px-4 py-3 text-left text-xs text-brand-accent hover:bg-brand-primary-hover"
+                  className="pixel-btn flex w-full max-w-xs items-center justify-between bg-brand-primary px-4 py-3 text-left text-xs text-brand-accent hover:bg-brand-primary-hover"
                 >
                   <span>
                     {pickupCandidates.length > 0
@@ -478,7 +533,7 @@ export default function Home() {
                       onClick={() => setCandidateDropdownOpen(false)}
                     />
                     <div
-                      className="pixel-panel absolute z-10 mt-2 max-h-80 w-80 overflow-y-auto bg-surface p-4"
+                      className="pixel-panel absolute z-10 mt-2 max-h-80 w-full max-w-xs overflow-y-auto bg-surface p-4"
                       onKeyDown={closeDropdownOnEnter}
                     >
                     {CANDIDATE_TIERS.map((tierGroup, tierIndex) => (
@@ -554,6 +609,8 @@ export default function Home() {
         </div>
       )}
       </div>
+
+      <FeedbackSurvey />
     </main>
   );
 }

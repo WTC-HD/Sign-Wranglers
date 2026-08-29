@@ -23,8 +23,15 @@ function formatCandidates(candidates: Sign["candidates"]) {
     .join(", ");
 }
 
+type SiteEvent = { type: string };
+
+function countEvents(events: SiteEvent[], type: string) {
+  return events.filter((event) => event.type === type).length;
+}
+
 export default function AdminPage(){
     const [signs, setSigns] = useState<Sign[]>([]);
+    const [events, setEvents] = useState<SiteEvent[]>([]);
 
     async function loadSigns(){
         const response = await fetch("/api/admin/signs");
@@ -35,6 +42,16 @@ export default function AdminPage(){
             setSigns(result.data);
         }
 
+    }
+
+    async function loadEvents(){
+        const response = await fetch("/api/admin/events");
+
+        const result = await response.json();
+
+        if(result.success) {
+            setEvents(result.data);
+        }
     }
 
     async function updateStatus(id: number, newStatus: string) {
@@ -49,10 +66,18 @@ export default function AdminPage(){
     useEffect(() => {
         // eslint-disable-next-line react-hooks/set-state-in-effect -- fetching data on mount is a documented valid use of useEffect
         loadSigns();
+        loadEvents();
     }, []);
 
     return(
             <main>
+            <div className="mt-8 border rounded p-4">
+                <p>Site Stats</p>
+                <p>Feedback: {countEvents(events, "feedback_yes")} yes / {countEvents(events, "feedback_no")} no</p>
+                <p>Polling place lookups: {countEvents(events, "polling_lookup")}</p>
+                <p>Candidate directory visits: {countEvents(events, "candidate_directory_visit")}</p>
+            </div>
+
             {signs.map((sign) => (
                 <div key={sign.id} className="mt-8 border rounded p-4">
                     <p>ID: {sign.id} Name: {sign.name}</p>
