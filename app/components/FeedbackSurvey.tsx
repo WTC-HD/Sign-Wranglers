@@ -33,28 +33,28 @@ export default function FeedbackSurvey() {
   }
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-10 w-full border-t-[3px] border-black bg-brand-primary py-6 text-center">
+    <div className="fixed inset-x-0 bottom-0 z-10 w-full border-t-[3px] border-black bg-brand-primary py-2 text-center">
       {feedbackResponse === null ? (
-        <>
-          <p className="mb-3 text-xs text-brand-accent">
+        <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-center gap-x-3 gap-y-1 px-4">
+          <p className="text-xs text-brand-accent">
             Did this website provide a service or information that you
             wouldn&apos;t have otherwise gotten?
           </p>
-          <div className="flex justify-center gap-4">
+          <div className="flex gap-2">
             <button
               onClick={() => respond("yes")}
-              className="pixel-btn bg-surface px-4 py-2 text-xs text-brand-accent hover:bg-brand-primary-hover"
+              className="pixel-btn bg-surface px-3 py-1 text-xs text-brand-accent hover:bg-brand-primary-hover"
             >
               Yes
             </button>
             <button
               onClick={() => respond("no")}
-              className="pixel-btn bg-surface px-4 py-2 text-xs text-brand-accent hover:bg-brand-primary-hover"
+              className="pixel-btn bg-surface px-3 py-1 text-xs text-brand-accent hover:bg-brand-primary-hover"
             >
               No
             </button>
           </div>
-        </>
+        </div>
       ) : (
         <p className="text-xs text-brand-accent">
           Thanks for letting us know!

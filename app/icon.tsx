@@ -1,4 +1,6 @@
 import { ImageResponse } from "next/og";
+import { readFileSync } from "fs";
+import { join } from "path";
 
 export const size = {
   width: 32,
@@ -8,6 +10,9 @@ export const size = {
 export const contentType = "image/png";
 
 export default function Icon() {
+  const imageData = readFileSync(join(process.cwd(), "public", "logo-cowboy-gold.png"));
+  const base64Image = `data:image/png;base64,${imageData.toString("base64")}`;
+
   return new ImageResponse(
     (
       <div
@@ -20,31 +25,13 @@ export default function Icon() {
           backgroundColor: "#3d2817",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              width: 22,
-              height: 14,
-              backgroundColor: "#ffc72c",
-              border: "2px solid #000000",
-            }}
-          />
-          <div
-            style={{
-              display: "flex",
-              width: 3,
-              height: 8,
-              backgroundColor: "#000000",
-            }}
-          />
-        </div>
+        <img
+          src={base64Image}
+          alt=""
+          width={26}
+          height={26}
+          style={{ objectFit: "contain" }}
+        />
       </div>
     ),
     { ...size }

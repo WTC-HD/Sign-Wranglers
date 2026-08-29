@@ -12,7 +12,7 @@ export default function CandidatesPage() {
     }, []);
 
     return (
-        <main className="flex min-h-screen flex-col items-center pb-48">
+        <main className="flex min-h-screen flex-col items-center pb-20">
             <Ticker />
 
             <div className="flex flex-col items-center p-12">
@@ -39,11 +39,21 @@ export default function CandidatesPage() {
                                     {group.category}
                                 </p>
 
-                                <div className="flex flex-wrap gap-4">
+                                <div
+                                    className={group.items.length === 1 ? "mx-auto" : "grid gap-4"}
+                                    style={
+                                        group.items.length === 1
+                                            // Uncontested races get a card the same width a candidate
+                                            // would have in a 2-way race (50%, minus half the gap),
+                                            // just centered instead of split into two columns.
+                                            ? { width: "calc((100% - 1rem) / 2)" }
+                                            : { gridTemplateColumns: `repeat(${Math.min(group.items.length, 3)}, minmax(0, 1fr))` }
+                                    }
+                                >
                                     {group.items.map((candidate) => (
                                         <div
                                             key={candidate.name}
-                                            className="pixel-panel flex w-56 flex-col gap-2 bg-surface p-4"
+                                            className="pixel-panel flex w-full flex-col gap-2 bg-surface p-4"
                                         >
                                             <p className="text-sm text-brand-accent">
                                                 {candidate.name}

@@ -1,11 +1,13 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import { CANDIDATE_TIERS, partyAbbreviation } from "@/app/config/races";
-import { SITE_CONFIG } from "@/app/config/site";
 import Ticker from "@/app/components/Ticker";
 import FeedbackSurvey from "@/app/components/FeedbackSurvey";
+import Logo from "@/app/components/Logo";
+import PopupHeader from "@/app/components/PopupHeader";
 import { trackEventOnce } from "@/app/lib/trackEvent";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function Home() {
   const [view, setView] = useState("");
@@ -16,6 +18,7 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [candidateDropdownOpen, setCandidateDropdownOpen] = useState(false);
   const [openTiers, setOpenTiers] = useState<string[]>([]);
+  const [openVoterInfoSections, setOpenVoterInfoSections] = useState<string[]>([]);
   const [selectedCandidates, setSelectedCandidates] = useState<string[]>([]);
   const [pickupCandidates, setPickupCandidates] = useState<string[]>([]);
   const [pickupAllSigns, setPickupAllSigns] = useState(false);
@@ -53,6 +56,12 @@ export default function Home() {
   function toggleTier(tier: string) {
     setOpenTiers((prev) =>
       prev.includes(tier) ? prev.filter((t) => t !== tier) : [...prev, tier]
+    );
+  }
+
+  function toggleVoterInfoSection(section: string) {
+    setOpenVoterInfoSections((prev) =>
+      prev.includes(section) ? prev.filter((s) => s !== section) : [...prev, section]
     );
   }
 
@@ -125,112 +134,130 @@ export default function Home() {
   }
 
   return (
-
-    <main className="flex min-h-screen flex-col items-center pb-48">
+    <main className="flex min-h-screen flex-col pb-32">
       <Ticker />
 
-      <div className="flex flex-col items-center justify-center px-6 pt-6 pb-8 text-center sm:px-12 sm:pt-12 md:px-24 md:pt-24">
-        <h1 className="text-2xl text-brand-accent [text-shadow:4px_4px_0_#000]">
-          {SITE_CONFIG.name}
-        </h1>
+      {/* flex-1 stretches this to fill all remaining viewport height
+          (main is min-h-screen). Polling place and the logo sit at their
+          natural size up top; the button area is the flex-1 element, so
+          it absorbs whatever's left and the 70/30 split (grid-rows-[7fr_3fr])
+          has real space to divide. */}
+      <div className="flex flex-1 flex-col items-center gap-4 px-6 py-8 text-center sm:px-12 md:px-16 md:py-10">
+        {/* Shares the same max-w-3xl grid-cols-2 shape as the Candidate
+            Directory / Voter Info row below, so the Logo's column lines
+            up directly above Candidate Directory, and the polling panel's
+            column lines up above Voter Info. */}
+        <div className="mx-auto grid w-full max-w-3xl grid-cols-1 items-center gap-4 sm:grid-cols-2">
+          <div className="flex justify-center">
+            <Logo />
+          </div>
 
-        <div className="pixel-panel mt-8 w-full max-w-xs bg-surface p-4">
-          <p className="mb-2 text-xs uppercase tracking-wide text-brand-accent-muted">
-            Find Your Polling Place
-          </p>
-
-          <input
-            type="text"
-            value={pollingAddress}
-            onChange={(e) => setPollingAddress(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && pollingAddress) {
-                e.preventDefault();
-                setShowPollingPopup(true);
-                trackEventOnce("polling_lookup");
-              }
-            }}
-            placeholder="Enter your address"
-            className="block w-full border-2 border-black bg-surface px-3 py-2 text-xs text-foreground"
-          />
-
-          <button
-            onClick={() => {
-              setShowPollingPopup(true);
-              trackEventOnce("polling_lookup");
-            }}
-            disabled={!pollingAddress}
-            className="pixel-btn mt-2 w-full bg-brand-primary px-3 py-2 text-xs text-brand-accent hover:bg-brand-primary-hover disabled:opacity-50"
-          >
-            Find My Polling Place
-          </button>
-        </div>
-
-        {/* Wyoming's election isn't indexed by the Google Civic API yet
-            (see app/api/polling-location/route.ts), so a real lookup
-            fails for every address right now. Showing this instead of
-            attempting a lookup that we know will fail. */}
-        {showPollingPopup && (
-          <div
-            className="fixed inset-0 z-20 flex items-center justify-center bg-black/60"
-            onClick={() => setShowPollingPopup(false)}
-          >
-            <div
-              className="pixel-panel mx-4 w-full max-w-xs bg-surface p-6 text-center"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <p className="text-xs text-brand-accent">
-                Check back 2-3 weeks before an election to look up your polling place.
+          <div className="flex justify-center">
+            <div className="pixel-panel w-full max-w-xs bg-surface p-4">
+              <p className="mb-2 text-xs uppercase tracking-wide text-brand-accent-muted">
+                Find Your Polling Place
               </p>
 
-              <a
-                href="https://sos.wyo.gov/Elections/PollPlace/default.aspx"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-3 block text-xs text-brand-accent-muted underline"
-              >
-                Or look up your polling place on the official WY SOS site
-              </a>
+              <input
+                type="text"
+                value={pollingAddress}
+                onChange={(e) => setPollingAddress(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && pollingAddress) {
+                    e.preventDefault();
+                    setShowPollingPopup(true);
+                    trackEventOnce("polling_lookup");
+                  }
+                }}
+                placeholder="Enter your address"
+                className="block w-full border-2 border-black bg-surface px-3 py-2 text-xs text-foreground"
+              />
 
               <button
-                onClick={() => setShowPollingPopup(false)}
-                className="pixel-btn mt-4 bg-brand-primary px-3 py-2 text-xs text-brand-accent hover:bg-brand-primary-hover"
+                onClick={() => {
+                  setShowPollingPopup(true);
+                  trackEventOnce("polling_lookup");
+                }}
+                disabled={!pollingAddress}
+                className="pixel-btn mt-2 w-full bg-brand-primary px-3 py-2 text-xs text-brand-accent hover:bg-brand-primary-hover disabled:opacity-50"
               >
-                Close
+                Find My Polling Place
               </button>
             </div>
           </div>
-        )}
+        </div>
 
-      <div className="mt-8 flex flex-wrap justify-center gap-4">
-        <Link
-          href="/candidates"
-          className="pixel-btn bg-brand-primary px-4 py-3 text-xs text-brand-accent hover:bg-brand-primary-hover"
-        >
-          Candidate Directory
-        </Link>
+        <div className="grid w-full flex-1 grid-rows-[7fr_3fr] gap-4">
+          <div className="flex items-center justify-center">
+            <div className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2">
+              <Link
+                href="/candidates"
+                className="pixel-btn flex items-center justify-center gap-3 bg-brand-primary px-4 py-4 text-sm text-brand-accent hover:bg-brand-primary-hover"
+              >
+                <Image src="/logo-cowboy-gold.png" alt="" width={48} height={48} className="h-12 w-12" />
+                Candidate Directory
+              </Link>
 
-        <button
-          onClick={() => setShowRegistrationGuide(true)}
-          className="pixel-btn bg-brand-primary px-4 py-3 text-xs text-brand-accent hover:bg-brand-primary-hover"
-        >
-          Voter Registration Guide
-        </button>
+              <button
+                onClick={() => setShowRegistrationGuide(true)}
+                className="pixel-btn flex items-center justify-center gap-3 bg-brand-primary px-4 py-4 text-sm text-brand-accent hover:bg-brand-primary-hover"
+              >
+                <Image src="/registration-icon.png" alt="" width={48} height={48} className="h-12 w-12" />
+                Voter Info
+              </button>
+            </div>
+          </div>
 
-        <button
-          onClick={() => { setView("request"); setFormStep(1); }}
-          className="pixel-btn bg-brand-primary px-4 py-3 text-xs text-brand-accent hover:bg-brand-primary-hover"
-        >
-          Sign(s) Dropoff
-        </button>
+          <div className="flex items-center justify-center">
+            <div className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2">
+              <button
+                onClick={() => { setView("request"); setFormStep(1); }}
+                className="pixel-btn bg-brand-primary px-4 py-4 text-sm text-brand-accent hover:bg-brand-primary-hover"
+              >
+                Sign(s) Dropoff
+              </button>
 
-        <button
-          onClick={() => { setView("pickup"); setFormStep(1); }}
-          className="pixel-btn bg-brand-primary px-4 py-3 text-xs text-brand-accent hover:bg-brand-primary-hover"
-        >
-          Sign(s) Removal
-        </button>
+              <button
+                onClick={() => { setView("pickup"); setFormStep(1); }}
+                className="pixel-btn bg-brand-primary px-4 py-4 text-sm text-brand-accent hover:bg-brand-primary-hover"
+              >
+                Sign(s) Removal
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {/* Wyoming's election isn't indexed by the Google Civic API yet
+          (see app/api/polling-location/route.ts), so a real lookup
+          fails for every address right now. Showing this instead of
+          attempting a lookup that we know will fail. */}
+      {showPollingPopup && (
+        <div
+          className="fixed inset-0 z-20 flex items-center justify-center bg-black/60"
+          onClick={() => setShowPollingPopup(false)}
+        >
+          <div
+            className="pixel-panel mx-4 w-full max-w-xs bg-surface p-6 text-left"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <PopupHeader title="Find Your Polling Place" onClose={() => setShowPollingPopup(false)} />
+
+            <p className="text-xs text-brand-accent">
+              Check back 2-3 weeks before an election to look up your polling place.
+            </p>
+
+            <a
+              href="https://sos.wyo.gov/Elections/PollPlace/default.aspx"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 block text-xs text-brand-accent-muted underline"
+            >
+              Or look up your polling place on the official WY SOS site
+            </a>
+          </div>
+        </div>
+      )}
 
       {showRegistrationGuide && (
         <div
@@ -241,66 +268,158 @@ export default function Home() {
             className="pixel-panel mx-4 w-full max-w-sm max-h-[80vh] overflow-y-auto bg-surface p-6 text-left"
             onClick={(e) => e.stopPropagation()}
           >
-            <p className="mb-3 text-sm text-brand-accent">Voter Registration Guide</p>
+            <PopupHeader title="Voter Info" onClose={() => setShowRegistrationGuide(false)} />
 
-            <p className="mb-1 text-xs uppercase tracking-wide text-brand-accent-muted">
-              Who Can Register
-            </p>
-            <p className="mb-3 text-xs text-brand-accent">
-              You must be 18 or older on Election Day, a U.S. citizen, and a
-              Wyoming resident for at least 30 days before the election. Past
-              felony convictions don&apos;t disqualify you if your voting
-              rights have been restored.
-            </p>
+            <div>
+              <button
+                type="button"
+                onClick={() => toggleVoterInfoSection("Who Can Register")}
+                className="flex w-full items-center justify-between py-1 text-xs uppercase tracking-wide text-brand-accent"
+              >
+                <span>Who Can Register</span>
+                <span>{openVoterInfoSections.includes("Who Can Register") ? "▲" : "▼"}</span>
+              </button>
 
-            <p className="mb-1 text-xs uppercase tracking-wide text-brand-accent-muted">
-              What To Bring
-            </p>
-            <p className="mb-3 text-xs text-brand-accent">
-              A valid Wyoming driver&apos;s license. If you don&apos;t have
-              one, bring the last four digits of your Social Security number
-              plus another form of ID (passport, military ID, tribal ID,
-              student ID, etc.).
-            </p>
+              {openVoterInfoSections.includes("Who Can Register") && (
+                <>
+                  <p className="mt-2 text-xs text-brand-accent">
+                    You must be 18 or older on Election Day, a U.S. citizen, and a
+                    Wyoming resident for at least 30 days before the election. Past
+                    felony convictions don&apos;t disqualify you if your voting
+                    rights have been restored.
+                  </p>
 
-            <p className="mb-1 text-xs uppercase tracking-wide text-brand-accent-muted">
-              Ways To Register
-            </p>
-            <p className="mb-3 text-xs text-brand-accent">
-              In person at your county clerk&apos;s office, by mail (notarized,
-              at least 14 days before the election), or same-day at your
-              polling place on Election Day itself.
-            </p>
+                  <a
+                    href="https://sos.wyo.gov/elections/state/registeringtovote.aspx"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 block text-xs text-brand-accent-muted underline"
+                  >
+                    Source: Wyoming Secretary of State
+                  </a>
+                </>
+              )}
+            </div>
 
-            <a
-              href="https://sos.wyo.gov/elections/state/registeringtovote.aspx"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mb-4 block text-xs text-brand-accent-muted underline"
-            >
-              Full details & registration form: Wyoming Secretary of State
-            </a>
+            <div className="mt-3 border-t border-brand-primary-hover pt-3">
+              <button
+                type="button"
+                onClick={() => toggleVoterInfoSection("Ways To Register")}
+                className="flex w-full items-center justify-between py-1 text-xs uppercase tracking-wide text-brand-accent"
+              >
+                <span>Ways To Register</span>
+                <span>{openVoterInfoSections.includes("Ways To Register") ? "▲" : "▼"}</span>
+              </button>
 
-            <button
-              onClick={() => setShowRegistrationGuide(false)}
-              className="pixel-btn bg-brand-primary px-3 py-2 text-xs text-brand-accent hover:bg-brand-primary-hover"
-            >
-              Close
-            </button>
+              {openVoterInfoSections.includes("Ways To Register") && (
+                <>
+                  <p className="mt-2 text-xs text-brand-accent">
+                    In person at your county clerk&apos;s office, by mail (notarized,
+                    at least 14 days before the election), or same-day at your
+                    polling place on Election Day itself.
+                  </p>
+
+                  <a
+                    href="https://sos.wyo.gov/elections/state/registeringtovote.aspx"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 block text-xs text-brand-accent-muted underline"
+                  >
+                    Full registration details: Wyoming Secretary of State
+                  </a>
+                </>
+              )}
+            </div>
+
+            <div className="mt-3 border-t border-brand-primary-hover pt-3">
+              <button
+                type="button"
+                onClick={() => toggleVoterInfoSection("Voting In Person")}
+                className="flex w-full items-center justify-between py-1 text-xs uppercase tracking-wide text-brand-accent"
+              >
+                <span>Voting In Person</span>
+                <span>{openVoterInfoSections.includes("Voting In Person") ? "▲" : "▼"}</span>
+              </button>
+
+              {openVoterInfoSections.includes("Voting In Person") && (
+                <>
+                  <p className="mt-2 text-xs text-brand-accent">
+                    Bring a valid Wyoming driver&apos;s license. If you don&apos;t
+                    have one, bring the last four digits of your Social Security
+                    number plus another form of ID (passport, military ID, tribal
+                    ID, student ID, etc.).
+                  </p>
+
+                  <a
+                    href="https://sos.wyo.gov/Elections/VoterID/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 block text-xs text-brand-accent-muted underline"
+                  >
+                    Source: Wyoming Secretary of State
+                  </a>
+                </>
+              )}
+            </div>
+
+            <div className="mt-3 border-t border-brand-primary-hover pt-3">
+              <button
+                type="button"
+                onClick={() => toggleVoterInfoSection("Absentee & Mail Voting")}
+                className="flex w-full items-center justify-between py-1 text-xs uppercase tracking-wide text-brand-accent"
+              >
+                <span>Absentee &amp; Mail Voting</span>
+                <span>{openVoterInfoSections.includes("Absentee & Mail Voting") ? "▲" : "▼"}</span>
+              </button>
+
+              {openVoterInfoSections.includes("Absentee & Mail Voting") && (
+                <>
+                  <p className="mt-2 text-xs text-brand-accent">
+                    Any registered voter can request an absentee ballot from their
+                    county clerk (by phone, mail, email, in person, or online) any
+                    time during the election year, up until Election Day itself.
+                    Ballots go out starting 28 days before the election (45 days
+                    for military/overseas voters). Your completed ballot must
+                    reach the county clerk&apos;s office by 7:00 PM on Election
+                    Day — mail can take up to a week, so send it back early.
+                    Once the clerk receives it, your ballot is final and can&apos;t
+                    be changed.
+                  </p>
+
+                  <a
+                    href="https://sos.wyo.gov/elections/state/absenteevoting.aspx"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 block text-xs text-brand-accent-muted underline"
+                  >
+                    Full absentee voting details: Wyoming Secretary of State
+                  </a>
+                </>
+              )}
+            </div>
           </div>
         </div>
       )}
 
       {/* Page for requesting a sign */}
       {view === "request" && (
-        <div>
+        <div
+          className="fixed inset-0 z-20 flex items-center justify-center bg-black/60"
+          onClick={() => setView("")}
+        >
+          <div
+            className="pixel-panel mx-4 w-full max-w-xs max-h-[80vh] overflow-y-auto bg-surface p-6 text-left"
+            onClick={(e) => e.stopPropagation()}
+          >
+          <PopupHeader title="Sign(s) Dropoff" onClose={() => setView("")} />
+
           {formStep === 1 && (
             <>
-              <div className="relative mt-8">
+              <div className="relative">
                 <button
                   type="button"
                   onClick={() => setCandidateDropdownOpen(!candidateDropdownOpen)}
-                  className="pixel-btn flex w-full max-w-xs items-center justify-between bg-brand-primary px-4 py-3 text-left text-xs text-brand-accent hover:bg-brand-primary-hover"
+                  className="pixel-btn flex w-full items-center justify-between bg-brand-primary px-4 py-3 text-left text-xs text-brand-accent hover:bg-brand-primary-hover"
                 >
                   <span>
                     {selectedCandidates.length > 0
@@ -320,7 +439,7 @@ export default function Home() {
                       onClick={() => setCandidateDropdownOpen(false)}
                     />
                     <div
-                      className="pixel-panel absolute z-10 mt-2 max-h-80 w-full max-w-xs overflow-y-auto bg-surface p-4"
+                      className="pixel-panel relative z-10 mt-2 w-full bg-surface p-4"
                       onKeyDown={closeDropdownOnEnter}
                     >
                     {CANDIDATE_TIERS.map((tierGroup, tierIndex) => (
@@ -397,7 +516,7 @@ export default function Home() {
                   }
                 }}
                 placeholder="Enter your name"
-                className="mt-8 block border-2 border-black bg-surface px-4 py-2 text-foreground"
+                className="block w-full border-2 border-black bg-surface px-4 py-2 text-foreground"
               />
 
               <input
@@ -412,7 +531,7 @@ export default function Home() {
                   }
                 }}
                 placeholder="Enter your address"
-                className="mt-8 block border-2 border-black bg-surface px-4 py-2 text-foreground"
+                className="mt-4 block w-full border-2 border-black bg-surface px-4 py-2 text-foreground"
               />
 
               <input
@@ -421,7 +540,7 @@ export default function Home() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="mt-8 block border-2 border-black bg-surface px-4 py-2 text-foreground"
+                className="mt-4 block w-full border-2 border-black bg-surface px-4 py-2 text-foreground"
               />
 
               <div className="mt-8 flex gap-4">
@@ -441,13 +560,23 @@ export default function Home() {
             </>
           )}
 
-          {statusMessage && <p className="mt-4">{statusMessage}</p>}
+          {statusMessage && <p className="mt-4 text-xs text-brand-accent">{statusMessage}</p>}
+          </div>
         </div>
       )}
 
       {/* Page for picking up signs */}
       {view === "pickup" && (
-        <div>
+        <div
+          className="fixed inset-0 z-20 flex items-center justify-center bg-black/60"
+          onClick={() => setView("")}
+        >
+          <div
+            className="pixel-panel mx-4 w-full max-w-xs max-h-[80vh] overflow-y-auto bg-surface p-6 text-left"
+            onClick={(e) => e.stopPropagation()}
+          >
+          <PopupHeader title="Sign(s) Removal" onClose={() => setView("")} />
+
           {formStep === 1 && (
             <>
               <input
@@ -462,7 +591,7 @@ export default function Home() {
                   }
                 }}
                 placeholder="Enter name here"
-                className="mt-8 block border-2 border-black bg-surface px-4 py-2 text-foreground"
+                className="block w-full border-2 border-black bg-surface px-4 py-2 text-foreground"
               />
               <input
                 ref={addressRef}
@@ -476,7 +605,7 @@ export default function Home() {
                   }
                 }}
                 placeholder="Enter the address"
-                className="mt-8 block border-2 border-black bg-surface px-4 py-2 text-foreground"
+                className="mt-4 block w-full border-2 border-black bg-surface px-4 py-2 text-foreground"
               />
               <input
                 ref={emailRef}
@@ -484,7 +613,7 @@ export default function Home() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email (optional, for a confirmation)"
-                className="mt-8 block border-2 border-black bg-surface px-4 py-2 text-foreground"
+                className="mt-4 block w-full border-2 border-black bg-surface px-4 py-2 text-foreground"
               />
 
               <button
@@ -498,7 +627,7 @@ export default function Home() {
 
           {formStep === 2 && (
             <>
-              <label className="mt-8 flex items-center gap-2 text-sm">
+              <label className="flex items-center gap-2 text-sm">
                 <input
                   type="checkbox"
                   checked={pickupAllSigns}
@@ -509,11 +638,11 @@ export default function Home() {
               </label>
 
               {!pickupAllSigns && (
-              <div className="relative mt-8">
+              <div className="relative mt-4">
                 <button
                   type="button"
                   onClick={() => setCandidateDropdownOpen(!candidateDropdownOpen)}
-                  className="pixel-btn flex w-full max-w-xs items-center justify-between bg-brand-primary px-4 py-3 text-left text-xs text-brand-accent hover:bg-brand-primary-hover"
+                  className="pixel-btn flex w-full items-center justify-between bg-brand-primary px-4 py-3 text-left text-xs text-brand-accent hover:bg-brand-primary-hover"
                 >
                   <span>
                     {pickupCandidates.length > 0
@@ -533,7 +662,7 @@ export default function Home() {
                       onClick={() => setCandidateDropdownOpen(false)}
                     />
                     <div
-                      className="pixel-panel absolute z-10 mt-2 max-h-80 w-full max-w-xs overflow-y-auto bg-surface p-4"
+                      className="pixel-panel relative z-10 mt-2 w-full bg-surface p-4"
                       onKeyDown={closeDropdownOnEnter}
                     >
                     {CANDIDATE_TIERS.map((tierGroup, tierIndex) => (
@@ -605,10 +734,10 @@ export default function Home() {
             </>
           )}
 
-          {statusMessage && <p className="mt-4">{statusMessage}</p>}
+          {statusMessage && <p className="mt-4 text-xs text-brand-accent">{statusMessage}</p>}
+          </div>
         </div>
       )}
-      </div>
 
       <FeedbackSurvey />
     </main>
