@@ -59,7 +59,7 @@ export default function CandidatesPage() {
                                     {group.items.map((candidate) => (
                                         <div
                                             key={candidate.name}
-                                            className="pixel-panel flex w-full flex-col gap-2 bg-surface p-4"
+                                            className="pixel-panel flex w-full min-w-0 flex-col gap-2 break-words bg-surface p-4"
                                         >
                                             <p className="text-sm text-brand-accent">
                                                 {candidate.name}

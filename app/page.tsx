@@ -197,7 +197,10 @@ export default function Home() {
             </Link>
 
             <button
-              onClick={() => setShowRegistrationGuide(true)}
+              onClick={() => {
+                setShowRegistrationGuide(true);
+                trackEventOnce("voter_info_click");
+              }}
               className="pixel-btn flex items-center justify-center gap-2 bg-brand-primary px-4 py-2 text-sm text-brand-accent hover:bg-brand-primary-hover"
             >
               <Image src="/registration-icon.png" alt="" width={28} height={28} className="h-7 w-7" />

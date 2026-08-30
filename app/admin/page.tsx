@@ -76,6 +76,7 @@ export default function AdminPage(){
                 <p>Feedback: {countEvents(events, "feedback_yes")} yes / {countEvents(events, "feedback_no")} no</p>
                 <p>Polling place lookups: {countEvents(events, "polling_lookup")}</p>
                 <p>Candidate directory visits: {countEvents(events, "candidate_directory_visit")}</p>
+                <p>Voter info clicks: {countEvents(events, "voter_info_click")}</p>
             </div>
 
             {signs.map((sign) => (

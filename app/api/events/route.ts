@@ -6,6 +6,7 @@ const VALID_TYPES = [
   "feedback_no",
   "polling_lookup",
   "candidate_directory_visit",
+  "voter_info_click",
 ];
 
 export async function POST(request: Request) {
