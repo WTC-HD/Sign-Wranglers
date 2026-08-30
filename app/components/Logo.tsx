@@ -16,8 +16,7 @@ export default function Logo() {
   return (
     <svg
       viewBox="0 0 480 480"
-      width={700}
-      height={700}
+      className="h-auto w-full max-w-[420px]"
       role="img"
       aria-label="Natrona County Vote Wranglers"
     >

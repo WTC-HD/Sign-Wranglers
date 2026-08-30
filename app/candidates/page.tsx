@@ -1,5 +1,6 @@
 "use client";
 import { useEffect } from "react";
+import type { CSSProperties } from "react";
 import { CANDIDATE_TIERS, partyAbbreviation } from "@/app/config/races";
 import Ticker from "@/app/components/Ticker";
 import FeedbackSurvey from "@/app/components/FeedbackSurvey";
@@ -40,14 +41,19 @@ export default function CandidatesPage() {
                                 </p>
 
                                 <div
-                                    className={group.items.length === 1 ? "mx-auto" : "grid gap-4"}
-                                    style={
+                                    className={
                                         group.items.length === 1
                                             // Uncontested races get a card the same width a candidate
-                                            // would have in a 2-way race (50%, minus half the gap),
-                                            // just centered instead of split into two columns.
-                                            ? { width: "calc((100% - 1rem) / 2)" }
-                                            : { gridTemplateColumns: `repeat(${Math.min(group.items.length, 3)}, minmax(0, 1fr))` }
+                                            // would have in a 2-way race (50%, minus half the gap) once
+                                            // there's room to split columns at all - full width below
+                                            // that, same as every other group.
+                                            ? "mx-auto w-full sm:[width:calc((100%-1rem)/2)]"
+                                            : "grid grid-cols-1 gap-4 sm:[grid-template-columns:repeat(var(--cols),minmax(0,1fr))]"
+                                    }
+                                    style={
+                                        group.items.length === 1
+                                            ? undefined
+                                            : ({ "--cols": Math.min(group.items.length, 3) } as CSSProperties)
                                     }
                                 >
                                     {group.items.map((candidate) => (

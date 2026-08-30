@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
-import { SITE_CONFIG } from "@/app/config/site";
+import { readFileSync } from "fs";
+import { join } from "path";
 
 export const size = {
   width: 1200,
@@ -9,6 +10,9 @@ export const size = {
 export const contentType = "image/png";
 
 export default function OpengraphImage() {
+  const imageData = readFileSync(join(process.cwd(), "public", "logo-bronco-gold.png"));
+  const base64Image = `data:image/png;base64,${imageData.toString("base64")}`;
+
   return new ImageResponse(
     (
       <div
@@ -16,7 +20,6 @@ export default function OpengraphImage() {
           width: "100%",
           height: "100%",
           display: "flex",
-          flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
           backgroundColor: "#1a120b",
@@ -24,49 +27,45 @@ export default function OpengraphImage() {
           boxSizing: "border-box",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            width: 110,
-            height: 70,
-            backgroundColor: "#ffc72c",
-            border: "6px solid #000000",
-          }}
-        />
-        <div
-          style={{
-            display: "flex",
-            width: 14,
-            height: 40,
-            backgroundColor: "#000000",
-          }}
+        <img
+          src={base64Image}
+          alt=""
+          width={340}
+          height={420}
+          style={{ objectFit: "contain" }}
         />
 
         <div
           style={{
             display: "flex",
-            marginTop: 40,
-            fontSize: 68,
-            fontWeight: 700,
-            color: "#ffc72c",
-            textAlign: "center",
-            padding: "0 100px",
-            lineHeight: 1.3,
+            flexDirection: "column",
+            marginLeft: 60,
+            maxWidth: 620,
           }}
         >
-          {SITE_CONFIG.name}
-        </div>
+          <div
+            style={{
+              display: "flex",
+              fontSize: 64,
+              fontWeight: 700,
+              color: "#ffc72c",
+              lineHeight: 1.25,
+            }}
+          >
+            Natrona County Vote Wranglers
+          </div>
 
-        <div
-          style={{
-            display: "flex",
-            marginTop: 24,
-            fontSize: 30,
-            color: "#c9a227",
-            textAlign: "center",
-          }}
-        >
-          {SITE_CONFIG.description}
+          <div
+            style={{
+              display: "flex",
+              marginTop: 24,
+              fontSize: 28,
+              color: "#c9a227",
+              letterSpacing: 2,
+            }}
+          >
+            NON-PARTISAN ELECTION INFO AND SIGNS
+          </div>
         </div>
       </div>
     ),

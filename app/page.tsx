@@ -141,7 +141,7 @@ export default function Home() {
           tight unit within the remaining viewport height, instead of
           stretching the button area to fill leftover space - that used to
           leave a big gap between the top row and the buttons. */}
-      <div className="flex flex-1 flex-col items-center justify-center gap-8 px-6 py-8 text-center sm:px-12 md:px-16 md:py-10">
+      <div className="flex flex-1 flex-col items-center justify-center gap-1 px-6 pt-8 pb-2 text-center sm:px-12 md:px-16 md:pt-10 md:pb-2">
         {/* Shares the same max-w-3xl grid-cols-2 shape as the Candidate
             Directory / Voter Info row below, so the Logo's column lines
             up directly above Candidate Directory, and the polling panel's
@@ -186,36 +186,36 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="flex w-full flex-col items-center gap-4">
-          <div className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="flex w-full flex-col items-center gap-1">
+          <div className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-2 sm:grid-cols-2">
             <Link
               href="/candidates"
-              className="pixel-btn flex items-center justify-center gap-3 bg-brand-primary px-4 py-4 text-sm text-brand-accent hover:bg-brand-primary-hover"
+              className="pixel-btn flex items-center justify-center gap-2 bg-brand-primary px-4 py-2 text-sm text-brand-accent hover:bg-brand-primary-hover"
             >
-              <Image src="/logo-cowboy-gold.png" alt="" width={48} height={48} className="h-12 w-12" />
+              <Image src="/logo-cowboy-gold.png" alt="" width={28} height={28} className="h-7 w-7" />
               Candidate Directory
             </Link>
 
             <button
               onClick={() => setShowRegistrationGuide(true)}
-              className="pixel-btn flex items-center justify-center gap-3 bg-brand-primary px-4 py-4 text-sm text-brand-accent hover:bg-brand-primary-hover"
+              className="pixel-btn flex items-center justify-center gap-2 bg-brand-primary px-4 py-2 text-sm text-brand-accent hover:bg-brand-primary-hover"
             >
-              <Image src="/registration-icon.png" alt="" width={48} height={48} className="h-12 w-12" />
+              <Image src="/registration-icon.png" alt="" width={28} height={28} className="h-7 w-7" />
               Voter Info
             </button>
           </div>
 
-          <div className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-4 sm:grid-cols-2">
+          <div className="mx-auto grid w-full max-w-3xl grid-cols-1 gap-2 sm:grid-cols-2">
             <button
               onClick={() => { setView("request"); setFormStep(1); }}
-              className="pixel-btn bg-brand-primary px-4 py-4 text-sm text-brand-accent hover:bg-brand-primary-hover"
+              className="pixel-btn bg-brand-primary px-4 py-2 text-sm text-brand-accent hover:bg-brand-primary-hover"
             >
               Sign(s) Dropoff
             </button>
 
             <button
               onClick={() => { setView("pickup"); setFormStep(1); }}
-              className="pixel-btn bg-brand-primary px-4 py-4 text-sm text-brand-accent hover:bg-brand-primary-hover"
+              className="pixel-btn bg-brand-primary px-4 py-2 text-sm text-brand-accent hover:bg-brand-primary-hover"
             >
               Sign(s) Removal
             </button>
